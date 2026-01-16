@@ -2,16 +2,11 @@
 Süper Lig 360 - FotMob Veri Güncelleme Scripti
 ==============================================
 
-Tek tuşla:
-1. FotMob'dan güncel verileri çeker (Selenium)
-2. web/app.js dosyasını otomatik günceller
-3. GitHub'a push eder
+Bu script Süper Lig verilerini FotMob'dan çeker ve projeyi günceller.
+Kullanıcı isteği üzerine HEADLESS MOD KAPALI olarak çalışır (Tarayıcı açılır).
 
 Kullanım:
   python update_weekly.py
-
-Gereksinimler:
-  pip install selenium webdriver-manager
 """
 
 import os
@@ -21,6 +16,7 @@ import json
 import time
 from datetime import datetime
 from pathlib import Path
+import subprocess
 
 # Selenium imports
 try:
@@ -35,8 +31,6 @@ try:
     SELENIUM_AVAILABLE = True
 except ImportError:
     SELENIUM_AVAILABLE = False
-
-import subprocess
 
 # Proje dizini
 PROJECT_DIR = Path(__file__).parent
@@ -59,55 +53,24 @@ FOTMOB_URLS = {
 
 # Takım ID -> Türkçe İsim eşleştirmesi
 TAKIM_SOZLUGU = {
-    "1933": "Başakşehir",
-    "3061": "Galatasaray",
-    "3057": "Fenerbahçe",
-    "3058": "Beşiktaş",
-    "3056": "Trabzonspor",
-    "3060": "Göztepe",
-    "3063": "Konyaspor",
-    "3064": "Rizespor",
-    "3065": "Alanyaspor",
-    "3066": "Gaziantep FK",
-    "3067": "Hatayspor",
-    "3069": "Antalyaspor",
-    "3073": "Kasımpaşa",
-    "3074": "Samsunspor",
-    "3075": "Kocaelispor",
-    "3077": "Kayserispor",
-    "3079": "Karagümrük",
-    "1054": "Gençlerbirliği",
-    "3059": "Eyüpspor",
-    "7496": "Bodrum FK"
+    "1933": "Başakşehir", "3061": "Galatasaray", "3057": "Fenerbahçe",
+    "3058": "Beşiktaş", "3056": "Trabzonspor", "3060": "Göztepe",
+    "3063": "Konyaspor", "3064": "Rizespor", "3065": "Alanyaspor",
+    "3066": "Gaziantep FK", "3067": "Hatayspor", "3069": "Antalyaspor",
+    "3073": "Kasımpaşa", "3074": "Samsunspor", "3075": "Kocaelispor",
+    "3077": "Kayserispor", "3079": "Karagümrük", "1054": "Gençlerbirliği",
+    "3059": "Eyüpspor", "7496": "Bodrum FK"
 }
-
-# ============================================================
-# LOGGING (Sadece Terminal - Türkçe)
-# ============================================================
 
 def log(mesaj, seviye="INFO"):
     """Terminale log yaz"""
     zaman = datetime.now().strftime('%H:%M:%S')
-    semboller = {
-        "INFO": "ℹ️ ",
-        "SUCCESS": "✅",
-        "ERROR": "❌",
-        "WARNING": "⚠️ ",
-        "STEP": "📌"
-    }
-    sembol = semboller.get(seviye, "")
-    print(f"[{zaman}] {sembol} {mesaj}")
-
-# ============================================================
-# FOTMOB SCRAPER
-# ============================================================
+    semboller = {"INFO": "ℹ️ ", "SUCCESS": "✅", "ERROR": "❌", "WARNING": "⚠️ ", "STEP": "📌"}
+    print(f"[{zaman}] {semboller.get(seviye, '')} {mesaj}")
 
 class FotMobScraper:
-    """FotMob'dan Süper Lig verilerini çeken scraper"""
-    
     def __init__(self):
         self.driver = None
-        self.takim_eslestirme = {}
         self.veri = {
             'puan_durumu': [],
             'gol_kralligi': [],
@@ -121,73 +84,61 @@ class FotMobScraper:
         }
     
     def driver_baslat(self):
-        """Chrome driver'ı başlat"""
-        log("Chrome driver başlatılıyor...", "STEP")
-        
+        log("Chrome driver başlatılıyor (GÖRÜNÜR MOD)...", "STEP")
         options = Options()
-        # Headless mod bazen sorun çıkarabilir, gerekirse '--headless=new' kaldırılabilir
-        options.add_argument('--headless=new')
+        # options.add_argument('--headless=new') # Headless KAPALI
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--disable-gpu')
-        options.add_argument('--window-size=1920,1080')
+        options.add_argument('--window-size=1600,900')
         options.add_argument('--lang=tr-TR')
         
         # Anti-detection
         options.add_argument('--disable-blink-features=AutomationControlled')
         options.add_experimental_option('excludeSwitches', ['enable-automation'])
         options.add_experimental_option('useAutomationExtension', False)
-        options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
         
         try:
             service = Service(ChromeDriverManager().install())
             self.driver = webdriver.Chrome(service=service, options=options)
-            
-            # Stealth script
             self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-            
             log("Chrome driver hazır", "SUCCESS")
             return True
         except Exception as e:
             log(f"Driver hatası: {e}", "ERROR")
             return False
-    
+
     def takim_adi_bul(self, takim_id):
-        """Takım ID'sinden Türkçe isim bul"""
         return TAKIM_SOZLUGU.get(str(takim_id), f"Takım {takim_id}")
-    
+
     def puan_durumu_cek(self):
-        """FotMob'dan puan durumunu çek"""
         log("Puan durumu çekiliyor...", "STEP")
-        
         try:
             self.driver.get(FOTMOB_URLS['tablo'])
             
-            # Elementin yüklenmesini bekle (Maksimum 20 saniye)
+            # Tablonun yüklenmesini bekle
             try:
                 WebDriverWait(self.driver, 20).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/teams/']"))
                 )
-                time.sleep(2) # Rendering için ek süre
+                time.sleep(3) 
             except TimeoutException:
-                log("   Sayfa yüklenirken zaman aşımı oluştu!", "ERROR")
-                # Hata ayıklama için sayfa başlığını yazdır
-                log(f"   Sayfa Başlığı: {self.driver.title}", "INFO")
+                log("   Tablo yüklenemedi (Zaman aşımı)", "ERROR")
                 return False
 
-            # JavaScript ile veri çek
             script = """
             return Array.from(document.querySelectorAll('a[href*="/teams/"]')).map(a => {
                 const match = a.href.match(/\\/teams\\/(\\d+)\\//);
                 const name = a.innerText.trim();
-                const row = a.closest('tr') || a.closest('div[class*="row"]') || a.closest('div[class*="Row"]') || a.closest('[role="row"]');
+                const row = a.closest('tr') || a.closest('div[role="row"]') || a.closest('div[class*="TableRowCSS"]');
+                
                 let stats = [];
                 if (row) {
-                    stats = Array.from(row.querySelectorAll('td, span')).map(el => el.innerText.trim());
+                    // Satırdaki tüm metinleri al
+                    stats = Array.from(row.querySelectorAll('td, span, div[class*="TableCell"]')).map(el => el.innerText.trim());
                 }
                 
-                // İsim kontrolü ve veri temizleme
-                if (match && name && !name.includes('\\n') && name.length > 2) {
+                if (match && name && name.length > 2) {
                     return { id: match[1], name: name, stats: stats };
                 }
                 return null;
@@ -196,36 +147,26 @@ class FotMobScraper:
             
             takimlar = self.driver.execute_script(script)
             
-            if not takimlar:
-                log("   Tablo verisi bulunamadı (Selector uyumsuz)", "WARNING")
-                return False
-
             puan_durumu = []
             sira = 1
             goruldu = set()
             
             for takim in takimlar:
-                if takim['name'] in goruldu:
-                    continue
-                
-                # Gereksiz metinleri atla (örn: "CL", "EL")
-                if len(takim['name']) < 3: 
-                    continue
-                    
+                if takim['name'] in goruldu: continue
                 goruldu.add(takim['name'])
                 
-                # Stats dizisinden verileri çıkar
+                # İstatistikleri temizle (sadece sayıları al)
                 stats = takim.get('stats', [])
-                sayilar = [int(s) for s in stats if s.isdigit()]
+                sayilar = []
+                for s in stats:
+                    # Negatif sayıları ve normal sayıları yakala
+                    temiz = s.replace(',', '').replace('.', '').strip()
+                    if temiz.lstrip('-').isdigit():
+                        sayilar.append(int(temiz))
                 
-                # Veri doğrulama: En az Oynanan(1), Puan(1) vb. olmalı.
-                # FotMob tablo yapısında genellikle çok fazla sayı döner.
-                # Sırayla: O, G, B, M, AG, YG, Av, Puan
-                
-                if len(sayilar) >= 8:
-                    # En sağdaki puan, genelde. Ama yapıya göre değişebilir.
-                    # FotMob masaüstü web: #, Takım, O, G, B, M, AG, YG, Av, P
-                    
+                # FotMob sırası: Oynanan, G, B, M, Goller, Averaj, Puan
+                # Genellikle en sondaki Puan'dır.
+                if len(sayilar) >= 6:
                     try:
                         puan_durumu.append({
                             'sira': sira,
@@ -234,64 +175,51 @@ class FotMobScraper:
                             'galibiyet': sayilar[1],
                             'beraberlik': sayilar[2],
                             'maglubiyet': sayilar[3],
-                            'atilan_gol': sayilar[4],
-                            'yenilen_gol': sayilar[5],
-                            'averaj': int(sayilar[4]) - int(sayilar[5]),
-                            'puan': sayilar[-1], # Son sayı puandır
+                            'atilan_gol': sayilar[4], # Bu index değişebilir, basit tutuyoruz
+                            'yenilen_gol': sayilar[5] if len(sayilar)>5 else 0,
+                            'averaj': sayilar[-2] if len(sayilar) > 7 else (sayilar[4] - sayilar[5]),
+                            'puan': sayilar[-1],
                             'form': ["G", "G", "G", "G", "G"]
                         })
                         log(f"   {sira}. {takim['name']} - {sayilar[-1]} puan")
                         sira += 1
-                    except IndexError:
+                        if sira > 18: break
+                    except Exception:
                         continue
-                        
-                    if sira > 18:
-                        break
-            
+
             if puan_durumu:
                 self.veri['puan_durumu'] = puan_durumu
                 log(f"{len(puan_durumu)} takım verisi alındı", "SUCCESS")
                 return True
-            else:
-                log("Puan durumu verisi parse edilemedi", "WARNING")
-                return False
+            return False
             
         except Exception as e:
             log(f"Puan durumu hatası: {e}", "ERROR")
             return False
-    
+
     def istatistik_cek(self, kategori, url_anahtar, turkce_adi):
-        """FotMob'dan istatistik çek (ilk 5)"""
         log(f"{turkce_adi} verileri çekiliyor...", "STEP")
-        
         try:
             self.driver.get(FOTMOB_URLS[url_anahtar])
             
-            # Elementin yüklenmesini bekle
             try:
-                # Oyuncu linklerinin yüklenmesini bekle
                 WebDriverWait(self.driver, 20).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/players/']"))
                 )
-                time.sleep(2) # Ekstra bekleme
+                time.sleep(3)
             except TimeoutException:
-                log(f"   {turkce_adi} sayfası yüklenemedi (Zaman aşımı)", "ERROR")
+                log(f"   {turkce_adi} yüklenemedi", "ERROR")
                 return False
             
-            # JavaScript ile oyuncu verilerini çek
-            # Daha esnek selector'lar
             script = """
             return Array.from(document.querySelectorAll('a[href*="/players/"]')).slice(0, 20).map(a => {
                 const row = a.closest('tr') || a.closest('div[class*="row"]') || a.closest('div[class*="Row"]');
                 if (!row) return null;
                 
-                const nameLink = row.querySelector('a[href*="/players/"]') || a;
-                const nameSpan = row.querySelector('[class*="PlayerName"], [class*="TeamOrPlayerName"]');
-                const name = nameSpan ? nameSpan.innerText.trim() : nameLink.innerText.split('\\n')[0].trim();
-
+                const name = a.innerText.split('\\n')[0].trim();
                 const stat = row.querySelector('[class*="StatValue"], [class*="stat"], [class*="Stat"]');
-                const teamImg = row.querySelector('img[src*="teamlogo"]');
                 
+                const teamImg = row.querySelector('img[src*="teamlogo"]');
                 let teamId = null;
                 if (teamImg) {
                     const match = teamImg.src.match(/teamlogo\\/(\\d+)/);
@@ -308,26 +236,19 @@ class FotMobScraper:
             
             oyuncular = self.driver.execute_script(script)
             
-            if not oyuncular:
-                log(f"   {turkce_adi} tablosu bulunamadı", "WARNING")
-                return False
-
             istatistikler = []
             goruldu = set()
             
             for oyuncu in oyuncular:
-                if oyuncu['name'] in goruldu or len(istatistikler) >= 5:
-                    continue
+                if oyuncu['name'] in goruldu or len(istatistikler) >= 5: continue
                 goruldu.add(oyuncu['name'])
                 
-                # Stat değerini parse et
                 try:
                     stat_str = oyuncu['stat'].replace(',', '.')
                     sayi = float(stat_str) if '.' in stat_str else int(stat_str)
-                except ValueError:
+                except:
                     continue
                 
-                # Takım adını bul
                 takim = self.takim_adi_bul(oyuncu['teamId']) if oyuncu['teamId'] else "Bilinmiyor"
                 
                 istatistikler.append({
@@ -339,59 +260,57 @@ class FotMobScraper:
             
             if istatistikler:
                 self.veri[kategori] = istatistikler
-                log(f"{len(istatistikler)} {turkce_adi} verisi alındı", "SUCCESS")
+                log(f"{len(istatistikler)} veri alındı", "SUCCESS")
                 return True
-            else:
-                log(f"{turkce_adi} verisi alınamadı (Parse hatası)", "WARNING")
-                return False
+            return False
             
         except Exception as e:
             log(f"{turkce_adi} hatası: {e}", "ERROR")
             return False
-    
+
     def fikstur_cek(self):
-        """FotMob'dan fikstür çek"""
         log("Fikstür verileri çekiliyor...", "STEP")
-        
         try:
             self.driver.get(FOTMOB_URLS['fikstur'])
             
-            # Elementin yüklenmesini bekle
             try:
+                # Maç wrapper'larını bekle
                 WebDriverWait(self.driver, 20).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/matches/']"))
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "a[class*='MatchWrapper']"))
                 )
-                time.sleep(2)
+                time.sleep(3)
             except TimeoutException:
-                log("   Fikstür sayfası yüklenemedi (Zaman aşımı)", "ERROR")
-                return False
+                # Alternatif selector
+                try:
+                    WebDriverWait(self.driver, 5).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/matches/']"))
+                    )
+                except:
+                    log("   Fikstür yüklenemedi", "ERROR")
+                    return False
             
             script = """
-            return Array.from(document.querySelectorAll('a[href*="/matches/"]')).slice(0, 9).map(a => {
-                // TeamBlockCSS gibi class'ları bul
-                const teams = a.querySelectorAll('span[class*="TeamName"]');
+            return Array.from(document.querySelectorAll('a[class*="MatchWrapper"], a[href*="/matches/"]')).slice(0, 15).map(a => {
+                // Takım isimlerini bul (genellikle 2 tane olur)
+                const teams = Array.from(a.querySelectorAll('span[class*="TeamName"], span[class*="name"]'));
                 const time = a.querySelector('[class*="time"], [class*="Time"]');
-                const date = a.querySelector('[class*="date"], [class*="Date"]');
+                const date = a.closest('div').querySelector('[class*="DateHeader"], [class*="date"]') || a.querySelector('[class*="Date"]');
                 
-                let home = '', away = '';
-                if (teams.length >= 2) {
-                    home = teams[0].innerText.trim();
-                    away = teams[1].innerText.trim();
-                }
+                if (teams.length < 2) return null;
                 
                 return {
-                    home: home,
-                    away: away,
+                    home: teams[0].innerText.trim(),
+                    away: teams[1].innerText.trim(),
                     date: date ? date.innerText.trim() : 'Yakında',
                     time: time ? time.innerText.trim() : '--:--'
                 };
-            }).filter(m => m.home && m.away);
+            }).filter(m => m !== null);
             """
             
             maclar = self.driver.execute_script(script)
             
             fikstur = []
-            for mac in maclar[:9]:
+            for mac in maclar[:9]: # İlk 9 maç
                 fikstur.append({
                     'ev_sahibi': mac['home'],
                     'deplasman': mac['away'],
@@ -404,238 +323,116 @@ class FotMobScraper:
                 self.veri['fikstur'] = fikstur
                 log(f"{len(fikstur)} maç verisi alındı", "SUCCESS")
                 return True
-            
             return False
             
         except Exception as e:
             log(f"Fikstür hatası: {e}", "ERROR")
             return False
-    
+
     def tum_verileri_cek(self):
-        """Tüm verileri çek"""
         print("\n" + "=" * 50)
-        log("VERİ ÇEKME İŞLEMİ BAŞLADI (FotMob)", "STEP")
+        log("FOTMOB VERİ ÇEKME BAŞLADI", "STEP")
         print("=" * 50)
         
-        if not self.driver_baslat():
-            return False
-        
-        basarili = 0
+        if not self.driver_baslat(): return False
         
         try:
-            # Puan durumu
-            if self.puan_durumu_cek():
-                basarili += 1
-            
-            # İstatistikler
-            if self.istatistik_cek('gol_kralligi', 'goller', 'Gol Krallığı'):
-                basarili += 1
-            
-            if self.istatistik_cek('asist_kralligi', 'asistler', 'Asist Krallığı'):
-                basarili += 1
-            
-            if self.istatistik_cek('en_iyi_rating', 'rating', 'En İyi Rating'):
-                basarili += 1
-            
-            if self.istatistik_cek('kacirilan_firsatlar', 'kacirilan', 'Kaçırılan Fırsatlar'):
-                basarili += 1
-            
-            if self.istatistik_cek('gol_yemeden', 'gol_yemeden', 'Gol Yemeden'):
-                basarili += 1
-            
-            if self.istatistik_cek('sari_kartlar', 'sari_kart', 'Sarı Kartlar'):
-                basarili += 1
-            
-            if self.istatistik_cek('kirmizi_kartlar', 'kirmizi_kart', 'Kırmızı Kartlar'):
-                basarili += 1
-            
-            # Fikstür
-            if self.fikstur_cek():
-                basarili += 1
+            self.puan_durumu_cek()
+            self.istatistik_cek('gol_kralligi', 'goller', 'Gol Krallığı')
+            self.istatistik_cek('asist_kralligi', 'asistler', 'Asist Krallığı')
+            self.istatistik_cek('en_iyi_rating', 'rating', 'En İyi Rating')
+            self.istatistik_cek('kacirilan_firsatlar', 'kacirilan', 'Kaçırılan Fırsatlar')
+            self.istatistik_cek('gol_yemeden', 'gol_yemeden', 'Gol Yemeden')
+            self.istatistik_cek('sari_kartlar', 'sari_kart', 'Sarı Kartlar')
+            self.istatistik_cek('kirmizi_kartlar', 'kirmizi_kart', 'Kırmızı Kartlar')
+            self.fikstur_cek()
             
             print("=" * 50)
-            if basarili > 0:
-                log(f"VERİ ÇEKME TAMAMLANDI ({basarili}/9 başarılı)", "SUCCESS")
-            else:
-                log("VERİ ÇEKİLEMEDİ - Mevcut veriler korunacak", "WARNING")
-            print("=" * 50 + "\n")
-            
-            return basarili > 0
-            
-        except Exception as e:
-            log(f"Genel hata: {e}", "ERROR")
-            return False
+            return True
         finally:
             if self.driver:
                 self.driver.quit()
-                log("Chrome driver kapatıldı")
-
-# ============================================================
-# APP.JS GÜNCELLEYICI
-# ============================================================
+                log("Tarayıcı kapatıldı")
 
 class AppJSGuncelleyici:
-    """web/app.js dosyasını günceller"""
-    
     def __init__(self, veri):
         self.veri = veri
         self.app_js_yolu = PROJECT_DIR / "web" / "app.js"
     
-    def puan_durumu_js_olustur(self):
-        """Puan durumu JavaScript kodu"""
-        satirlar = ["const REAL_STANDINGS = ["]
-        for takim in self.veri.get('puan_durumu', []):
-            form_str = json.dumps(takim.get('form', ['G','G','G','G','G']))
-            satirlar.append(f'    {{ rank: {takim["sira"]}, team_name: "{takim["takim_adi"]}", played: {takim["oynanan"]}, wins: {takim["galibiyet"]}, draws: {takim["beraberlik"]}, losses: {takim["maglubiyet"]}, goals_for: {takim["atilan_gol"]}, goals_against: {takim["yenilen_gol"]}, goal_diff: {takim["averaj"]}, points: {takim["puan"]}, form: {form_str} }},')
-        satirlar.append("];")
-        return '\n'.join(satirlar)
+    def puan_durumu_js(self):
+        lines = ["const REAL_STANDINGS = ["]
+        for t in self.veri.get('puan_durumu', []):
+            form = json.dumps(t.get('form', ["G"]*5))
+            lines.append(f'    {{ rank: {t["sira"]}, team_name: "{t["takim_adi"]}", played: {t["oynanan"]}, wins: {t["galibiyet"]}, draws: {t["beraberlik"]}, losses: {t["maglubiyet"]}, goals_for: {t["atilan_gol"]}, goals_against: {t["yenilen_gol"]}, goal_diff: {t["averaj"]}, points: {t["puan"]}, form: {form} }},')
+        lines.append("];")
+        return '\n'.join(lines)
     
-    def istatistik_js_olustur(self, degisken_adi, veri):
-        """İstatistik JavaScript kodu"""
-        satirlar = [f"const {degisken_adi} = ["]
-        for oyuncu in veri:
-            satirlar.append(f'    {{ name: "{oyuncu["oyuncu"]}", team: "{oyuncu["takim"]}", count: {oyuncu["sayi"]} }},')
-        satirlar.append("];")
-        return '\n'.join(satirlar)
+    def istatistik_js(self, var_name, data):
+        lines = [f"const {var_name} = ["]
+        for p in data:
+            lines.append(f'    {{ name: "{p["oyuncu"]}", team: "{p["takim"]}", count: {p["sayi"]} }},')
+        lines.append("];")
+        return '\n'.join(lines)
     
-    def fikstur_js_olustur(self):
-        """Fikstür JavaScript kodu"""
-        satirlar = ["const FIXTURES = ["]
-        for mac in self.veri.get('fikstur', []):
-            satirlar.append(f'    {{ home: "{mac["ev_sahibi"]}", away: "{mac["deplasman"]}", date: "{mac["tarih"]}", time: "{mac["saat"]}" }},')
-        satirlar.append("];")
-        return '\n'.join(satirlar)
+    def fikstur_js(self):
+        lines = ["const FIXTURES = ["]
+        for m in self.veri.get('fikstur', []):
+            lines.append(f'    {{ home: "{m["ev_sahibi"]}", away: "{m["deplasman"]}", date: "{m["tarih"]}", time: "{m["saat"]}" }},')
+        lines.append("];")
+        return '\n'.join(lines)
 
-    def dosya_guncelle(self):
-        """app.js dosyasını güncelle"""
+    def guncelle(self):
         log("web/app.js güncelleniyor...", "STEP")
-        
         try:
-            with open(self.app_js_yolu, 'r', encoding='utf-8') as f:
-                icerik = f.read()
+            with open(self.app_js_yolu, 'r', encoding='utf-8') as f: content = f.read()
             
-            guncellendi = False
-            
-            # Puan durumu
-            if self.veri.get('puan_durumu') and len(self.veri['puan_durumu']) >= 10:
-                yeni = self.puan_durumu_js_olustur()
-                icerik = re.sub(r'const REAL_STANDINGS = \[[\s\S]*?\];', yeni, icerik)
+            if self.veri.get('puan_durumu'):
+                content = re.sub(r'const REAL_STANDINGS = \[[\s\S]*?\];', self.puan_durumu_js(), content)
                 log("   Puan durumu güncellendi", "SUCCESS")
-                guncellendi = True
             
-            # İstatistikler eşleştirmesi
-            eslesme = {
-                'gol_kralligi': 'TOP_SCORERS',
-                'asist_kralligi': 'TOP_ASSISTS',
-                'en_iyi_rating': 'TOP_RATING',
-                'kacirilan_firsatlar': 'MISSED_CHANCES',
-                'gol_yemeden': 'CLEAN_SHEETS',
-                'sari_kartlar': 'YELLOW_CARDS',
+            map_stats = {
+                'gol_kralligi': 'TOP_SCORERS', 'asist_kralligi': 'TOP_ASSISTS',
+                'en_iyi_rating': 'TOP_RATING', 'kacirilan_firsatlar': 'MISSED_CHANCES',
+                'gol_yemeden': 'CLEAN_SHEETS', 'sari_kartlar': 'YELLOW_CARDS',
                 'kirmizi_kartlar': 'RED_CARDS'
             }
+            for key, var in map_stats.items():
+                if self.veri.get(key):
+                    content = re.sub(rf'const {var} = \[[\s\S]*?\];', self.istatistik_js(var, self.veri[key]), content)
+                    log(f"   {var} güncellendi", "SUCCESS")
             
-            for kategori, js_degisken in eslesme.items():
-                if self.veri.get(kategori) and len(self.veri[kategori]) >= 3:
-                    yeni = self.istatistik_js_olustur(js_degisken, self.veri[kategori])
-                    pattern = rf'const {js_degisken} = \[[\s\S]*?\];'
-                    icerik = re.sub(pattern, yeni, icerik)
-                    log(f"   {js_degisken} güncellendi", "SUCCESS")
-                    guncellendi = True
-
-            # Fikstür
-            if self.veri.get('fikstur') and len(self.veri['fikstur']) > 0:
-                yeni = self.fikstur_js_olustur()
-                # Mevcut FIXTURES bloğunu bul ve değiştir
-                icerik = re.sub(r'const FIXTURES = \[[\s\S]*?\];', yeni, icerik)
+            if self.veri.get('fikstur'):
+                content = re.sub(r'const FIXTURES = \[[\s\S]*?\];', self.fikstur_js(), content)
                 log("   Fikstür güncellendi", "SUCCESS")
-                guncellendi = True
             
-            if guncellendi:
-                with open(self.app_js_yolu, 'w', encoding='utf-8') as f:
-                    f.write(icerik)
-                log("web/app.js başarıyla güncellendi", "SUCCESS")
-            else:
-                log("Güncelleme yapılmadı - Yeterli veri yok", "WARNING")
-            
+            with open(self.app_js_yolu, 'w', encoding='utf-8') as f: f.write(content)
             return True
-            
         except Exception as e:
             log(f"Dosya güncelleme hatası: {e}", "ERROR")
             return False
 
-# ============================================================
-# GIT İŞLEMLERİ
-# ============================================================
-
-def git_gonder():
-    """Değişiklikleri GitHub'a gönder"""
+def git_push():
     log("GitHub'a gönderiliyor...", "STEP")
-    
     try:
         subprocess.run(["git", "add", "."], check=True, cwd=PROJECT_DIR)
-        log("   Dosyalar eklendi", "SUCCESS")
-        
-        commit_mesaji = f"Otomatik güncelleme - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-        sonuc = subprocess.run(
-            ["git", "commit", "-m", commit_mesaji],
-            capture_output=True,
-            text=True,
-            cwd=PROJECT_DIR
-        )
-        
-        if sonuc.returncode == 0:
-            log(f"   Commit: {commit_mesaji}", "SUCCESS")
-        else:
-            log("   Commit edilecek değişiklik yok", "INFO")
-            return True
-        
+        msg = f"Otomatik guncelleme {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+        subprocess.run(["git", "commit", "-m", msg], capture_output=True, cwd=PROJECT_DIR)
         subprocess.run(["git", "push", "origin", "main"], check=True, cwd=PROJECT_DIR)
-        log("   Push başarılı!", "SUCCESS")
-        
-        return True
-        
-    except subprocess.CalledProcessError as e:
+        log("Push başarılı", "SUCCESS")
+    except Exception as e:
         log(f"Git hatası: {e}", "ERROR")
-        return False
 
-# ============================================================
-# ANA FONKSİYON
-# ============================================================
-
-def ana():
-    """Ana fonksiyon"""
-    print("\n" + "=" * 50)
-    print("⚽ SÜPER LİG 360 - OTOMATİK GÜNCELLEME")
-    print(f"📅 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("📊 Veri Kaynağı: FotMob (Türkçe)")
-    print("=" * 50)
-    
+if __name__ == "__main__":
     if not SELENIUM_AVAILABLE:
-        log("Selenium yüklü değil!", "WARNING")
-        log("Yüklemek için: pip install selenium webdriver-manager", "INFO")
-        git_gonder()
-        return
-    
-    log("Otomatik scraping modu (FotMob)", "INFO")
-    
-    # 1. Verileri çek
+        print("Lütfen gereksinimleri yükleyin: pip install selenium webdriver-manager")
+        sys.exit(1)
+        
     scraper = FotMobScraper()
     scraper.tum_verileri_cek()
     
-    # 2. app.js güncelle
     if any(scraper.veri.values()):
-        guncelleyici = AppJSGuncelleyici(scraper.veri)
-        guncelleyici.dosya_guncelle()
+        updater = AppJSGuncelleyici(scraper.veri)
+        updater.guncelle()
+        git_push()
     else:
-        log("Veri çekilemedi - Manuel güncelleme gerekebilir", "WARNING")
-    
-    # 3. GitHub'a push
-    git_gonder()
-    
-    print("\n" + "=" * 50)
-    print("🏁 GÜNCELLEME TAMAMLANDI")
-    print("🌐 Website: https://kaan482.github.io/Superlig360/")
-    print("=" * 50 + "\n")
-
-if __name__ == "__main__":
-    ana()
+        log("Veri çekilemediği için güncelleme yapılmadı.", "WARNING")
