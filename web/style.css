@@ -87,6 +87,17 @@ body {
     gap: 8px;
 }
 
+.source-badge {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .status-dot {
     width: 8px;
     height: 8px;

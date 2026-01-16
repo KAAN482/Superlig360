@@ -104,29 +104,67 @@
             <!-- İstatistikler -->
             <div id="stats" class="tab-content">
                 <div class="stats-tabs">
-                    <button class="stats-tab-btn active" data-stat="goals">⚽ Goller</button>
-                    <button class="stats-tab-btn" data-stat="assists">🅰️ Asistler</button>
-                    <button class="stats-tab-btn" data-stat="yellow">🟡 Sarı Kartlar</button>
-                    <button class="stats-tab-btn" data-stat="red">🔴 Kırmızı Kartlar</button>
+                    <button class="stats-tab-btn active" data-stat="goals">⚽ Gol</button>
+                    <button class="stats-tab-btn" data-stat="assists">🅰️ Asist</button>
+                    <button class="stats-tab-btn" data-stat="rating">⭐ Rating</button>
+                    <button class="stats-tab-btn" data-stat="missed">❌ Kaçırılan</button>
+                    <button class="stats-tab-btn" data-stat="cleansheet">🧤 Gol Yemeden</button>
+                    <button class="stats-tab-btn" data-stat="yellow">🟡 Sarı Kart</button>
+                    <button class="stats-tab-btn" data-stat="red">🔴 Kırmızı Kart</button>
                 </div>
 
-                <!-- Goller -->
+                <!-- Gol Krallığı -->
                 <div id="goals" class="stats-content active">
                     <div class="card">
                         <div class="card-header">
-                            <h2>Gol Krallığı</h2>
+                            <h2>⚽ Gol Krallığı</h2>
+                            <span class="source-badge">FotMob</span>
                         </div>
                         <div class="stats-grid" id="goals-grid"></div>
                     </div>
                 </div>
 
-                <!-- Asistler -->
+                <!-- Asist Krallığı -->
                 <div id="assists" class="stats-content">
                     <div class="card">
                         <div class="card-header">
-                            <h2>Asist Krallığı</h2>
+                            <h2>🅰️ Asist Krallığı</h2>
+                            <span class="source-badge">FotMob</span>
                         </div>
                         <div class="stats-grid" id="assists-grid"></div>
+                    </div>
+                </div>
+
+                <!-- FotMob Rating -->
+                <div id="rating" class="stats-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>⭐ En İyi Rating</h2>
+                            <span class="source-badge">FotMob</span>
+                        </div>
+                        <div class="stats-grid" id="rating-grid"></div>
+                    </div>
+                </div>
+
+                <!-- Kaçırılan Fırsatlar -->
+                <div id="missed" class="stats-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>❌ Kaçırılan Büyük Fırsatlar</h2>
+                            <span class="source-badge">FotMob</span>
+                        </div>
+                        <div class="stats-grid" id="missed-grid"></div>
+                    </div>
+                </div>
+
+                <!-- Gol Yemeden -->
+                <div id="cleansheet" class="stats-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>🧤 Gol Yemeden Bitirilen Maçlar</h2>
+                            <span class="source-badge">FotMob</span>
+                        </div>
+                        <div class="stats-grid" id="cleansheet-grid"></div>
                     </div>
                 </div>
 
@@ -134,7 +172,8 @@
                 <div id="yellow" class="stats-content">
                     <div class="card">
                         <div class="card-header">
-                            <h2>Sarı Kart Sıralaması</h2>
+                            <h2>🟡 Sarı Kart Sıralaması</h2>
+                            <span class="source-badge">FotMob</span>
                         </div>
                         <div class="stats-grid" id="yellow-grid"></div>
                     </div>
@@ -144,7 +183,8 @@
                 <div id="red" class="stats-content">
                     <div class="card">
                         <div class="card-header">
-                            <h2>Kırmızı Kart Sıralaması</h2>
+                            <h2>🔴 Kırmızı Kart Sıralaması</h2>
+                            <span class="source-badge">FotMob</span>
                         </div>
                         <div class="stats-grid" id="red-grid"></div>
                     </div>

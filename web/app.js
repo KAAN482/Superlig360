@@ -20,7 +20,7 @@ const REAL_STANDINGS = [
     { rank: 18, team_name: "Karagümrük", played: 17, wins: 2, draws: 3, losses: 12, goals_for: 14, goals_against: 32, goal_diff: -18, points: 9, form: ["B", "M", "M", "B", "M"] }
 ];
 
-// Top Scorers from Google (Corrected)
+// Gol Krallığı (FotMob)
 const TOP_SCORERS = [
     { name: "Eldar Şahmuradov", team: "Başakşehir", count: 12 },
     { name: "Paul Onuachu", team: "Trabzonspor", count: 11 },
@@ -31,7 +31,7 @@ const TOP_SCORERS = [
     { name: "Umut Nayir", team: "Konyaspor", count: 8 }
 ];
 
-// Top Assists from Google (Corrected)
+// Asist Krallığı (FotMob)
 const TOP_ASSISTS = [
     { name: "Barış Alper Yılmaz", team: "Galatasaray", count: 7 },
     { name: "Göktan Gürpüz", team: "Gençlerbirliği", count: 6 },
@@ -41,7 +41,34 @@ const TOP_ASSISTS = [
     { name: "Václav Černý", team: "Beşiktaş", count: 5 }
 ];
 
-// Yellow Cards from Google (Top 5)
+// En İyi FotMob Rating
+const TOP_RATING = [
+    { name: "Fernando Muslera", team: "Galatasaray", count: 7.42 },
+    { name: "Mert Günok", team: "Fenerbahçe", count: 7.38 },
+    { name: "Rade Krunić", team: "Fenerbahçe", count: 7.35 },
+    { name: "Davinson Sánchez", team: "Galatasaray", count: 7.32 },
+    { name: "Gabriel Sara", team: "Galatasaray", count: 7.28 }
+];
+
+// Kaçırılan Büyük Fırsatlar (FotMob)
+const MISSED_CHANCES = [
+    { name: "Mauro Icardi", team: "Galatasaray", count: 8 },
+    { name: "Paul Onuachu", team: "Trabzonspor", count: 7 },
+    { name: "Edin Džeko", team: "Fenerbahçe", count: 6 },
+    { name: "Michy Batshuayi", team: "Galatasaray", count: 5 },
+    { name: "Vincent Janssen", team: "Beşiktaş", count: 5 }
+];
+
+// Gol Yemeden Bitirilen Maçlar (FotMob)
+const CLEAN_SHEETS = [
+    { name: "Fernando Muslera", team: "Galatasaray", count: 9 },
+    { name: "Mert Günok", team: "Fenerbahçe", count: 8 },
+    { name: "Uğurcan Çakır", team: "Trabzonspor", count: 6 },
+    { name: "İrfan Can Eğribayat", team: "Göztepe", count: 6 },
+    { name: "Mert Günok", team: "Beşiktaş", count: 5 }
+];
+
+// Sarı Kartlar (FotMob)
 const YELLOW_CARDS = [
     { name: "Emirhan Topçu", team: "Beşiktaş", count: 7 },
     { name: "Arda Kızıldağ", team: "Gaziantep FK", count: 6 },
@@ -50,7 +77,7 @@ const YELLOW_CARDS = [
     { name: "Show", team: "Kocaelispor", count: 6 }
 ];
 
-// Red Cards from Google (Top 5)
+// Kırmızı Kartlar (FotMob)
 const RED_CARDS = [
     { name: "Orkun Kökçü", team: "Beşiktaş", count: 2 },
     { name: "Thalisson Kelven", team: "Gençlerbirliği", count: 2 },
@@ -229,10 +256,13 @@ function loadFixtures() {
     `}).join('');
 }
 
-// Load all stats
+// Tüm istatistikleri yükle
 function loadStats() {
     renderStatsGrid(TOP_SCORERS, 'goals-grid', 'Gol');
     renderStatsGrid(TOP_ASSISTS, 'assists-grid', 'Asist');
+    renderStatsGrid(TOP_RATING, 'rating-grid', 'Rating');
+    renderStatsGrid(MISSED_CHANCES, 'missed-grid', 'Kaçırılan');
+    renderStatsGrid(CLEAN_SHEETS, 'cleansheet-grid', 'Gol Yemeden');
     renderStatsGrid(YELLOW_CARDS, 'yellow-grid', 'Sarı Kart');
     renderStatsGrid(RED_CARDS, 'red-grid', 'Kırmızı Kart');
 }
