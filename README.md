@@ -1,94 +1,72 @@
 # Süper Lig 360 ⚽
 
-Türkiye Süper Lig verilerini görselleştiren modern bir web uygulaması.
+Türkiye Süper Lig için modern ve kapsamlı bir analitik dashboard.
 
-## 🚀 Özellikler
+🌐 **Canlı Demo:** [https://kaan482.github.io/Superlig360/](https://kaan482.github.io/Superlig360/)
 
-- **Puan Durumu**: 18 takımın güncel lig sıralaması
-- **İstatistikler**: 
-  - ⚽ Gol Krallığı
-  - 🅰️ Asist Sıralaması
-  - 🟡 Sarı Kart İstatistikleri
-  - 🔴 Kırmızı Kart İstatistikleri
+## ✨ Özellikler
 
-## 📦 Teknolojiler
+### 📊 Puan Durumu
+- 18 takımın güncel puan tablosu
+- UEFA bölgeleri renk kodlu gösterim (Şampiyonlar Ligi, Avrupa Ligi, Konferans Ligi)
+- Küme düşme bölgesi gösterimi
+- Son 5 maç formu (G/B/M rozetleri)
 
-- **Frontend**: HTML5, CSS3, JavaScript
-- **Backend**: Python Flask API
-- **Database**: PostgreSQL (Docker)
-- **Data Transform**: dbt (Data Build Tool)
+### 📈 İstatistikler
+- **Gol Krallığı** - En çok gol atan oyuncular
+- **Asist Krallığı** - En çok asist yapan oyuncular
+- **Sarı Kartlar** - En çok sarı kart gören 5 oyuncu
+- **Kırmızı Kartlar** - En çok kırmızı kart gören 5 oyuncu
 
-## 🛠️ Kurulum
+### 📅 Fikstür
+- Haftalık maç programı
+- Takım formları görsel olarak
+- 🤖 **AI Destekli Maç Tahminleri**
+  - Puan durumuna göre
+  - Son 5 maç performansına göre
+  - Averaj ve ev sahibi avantajı hesabı
 
-### Gereksinimler
-- Docker & Docker Compose
-- Python 3.9+
-- Node.js (opsiyonel)
+### 🎨 Dinamik Arayüz
+- Her sekme için farklı arka plan gradyanları
+- Modern glassmorphism tasarım
+- Responsive mobil uyumlu tasarım
 
-### Adımlar
+## 🚀 Haftalık Güncelleme
 
-1. **Projeyi klonlayın**
+Her hafta sonu verileri güncellemek için:
+
 ```bash
-git clone https://github.com/your-repo/superlig360.git
-cd superlig360
+python update_weekly.py
 ```
 
-2. **Docker ile veritabanını başlatın**
-```bash
-docker-compose up -d
-```
+Bu script:
+1. Değişiklikleri commit eder
+2. GitHub'a push eder
+3. Website otomatik olarak güncellenir
 
-3. **Python bağımlılıklarını yükleyin**
-```bash
-pip install -r requirements.txt
-```
+## 🛠️ Teknolojiler
 
-4. **Veritabanını başlatın**
-```bash
-python populate_real_data.py
-```
-
-5. **dbt modellerini çalıştırın**
-```bash
-cd superlig360_dbt
-dbt run --profiles-dir .
-```
-
-6. **Flask API'yi başlatın**
-```bash
-python web/api.py
-```
-
-7. **Dashboard'u açın**
-```
-web/index.html dosyasını tarayıcınızda açın
-```
+- **Frontend:** HTML, CSS, JavaScript (Vanilla)
+- **Styling:** Modern CSS (Glassmorphism, Gradients)
+- **Deployment:** GitHub Pages + GitHub Actions
+- **Data:** Google'dan manuel veri çekimi
 
 ## 📁 Proje Yapısı
 
 ```
-Süperlig360/
+Superlig360/
 ├── web/                  # Frontend dosyaları
-│   ├── index.html       # Ana dashboard
-│   ├── app.js           # JavaScript logic & data
-│   ├── style.css        # Stil dosyası
-│   └── api.py           # Flask REST API
-├── superlig360_dbt/      # dbt projesi
-│   └── models/          # SQL modelleri
-├── sql/                  # SQL dosyaları
+│   ├── index.html        # Ana sayfa
+│   ├── style.css         # Stiller
+│   └── app.js            # JavaScript
+├── dashboard/            # Streamlit dashboard
 ├── scraper/              # Veri çekme scriptleri
-├── docker-compose.yml    # Docker config
-└── requirements.txt      # Python bağımlılıkları
+├── sql/                  # Veritabanı şemaları
+├── superlig360_dbt/      # DBT modelleri
+├── update_weekly.py      # Tek tuşla güncelleme
+└── .github/workflows/    # CI/CD
 ```
-
-## 📊 Veri Kaynağı
-
-Veriler Google'dan çekilen Trendyol Süper Lig 2025-26 sezonu 17. hafta istatistiklerini içermektedir.
 
 ## 📝 Lisans
 
 MIT License
-
----
-
-**Süper Lig 360** - Türk Futbolunu Verilerle Keşfet ⚽🇹🇷
