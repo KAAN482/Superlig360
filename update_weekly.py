@@ -12,11 +12,6 @@ Kullanım:
 
 Gereksinimler:
   pip install selenium webdriver-manager
-
-Veri Kaynakları:
-  - Puan Durumu: https://www.fotmob.com/leagues/71/table/super-lig
-  - Fikstür: https://www.fotmob.com/leagues/71/fixtures/super-lig?group=by-round
-  - İstatistikler: https://www.fotmob.com/leagues/71/stats/super-lig
 """
 
 import os
@@ -46,11 +41,44 @@ import subprocess
 # Proje dizini
 PROJECT_DIR = Path(__file__).parent
 
-# FotMob URL'leri
+# FotMob URL'leri (Türkçe)
+FOTMOB_BASE = "https://www.fotmob.com/tr/leagues/71"
 FOTMOB_URLS = {
-    'table': 'https://www.fotmob.com/leagues/71/table/super-lig',
-    'fixtures': 'https://www.fotmob.com/leagues/71/fixtures/super-lig?group=by-round',
-    'stats': 'https://www.fotmob.com/leagues/71/stats/super-lig'
+    'tablo': f"{FOTMOB_BASE}/table/super-lig",
+    'fikstur': f"{FOTMOB_BASE}/fixtures/super-lig?group=by-round",
+    'stats': f"{FOTMOB_BASE}/stats/super-lig",
+    # Detaylı istatistik sayfaları
+    'goller': f"{FOTMOB_BASE}/stats/season/27244/players/goals/super-lig",
+    'asistler': f"{FOTMOB_BASE}/stats/season/27244/players/goal_assist/super-lig",
+    'rating': f"{FOTMOB_BASE}/stats/season/27244/players/rating/super-lig",
+    'kacirilan': f"{FOTMOB_BASE}/stats/season/27244/players/big_chance_missed/super-lig",
+    'gol_yemeden': f"{FOTMOB_BASE}/stats/season/27244/players/clean_sheet/super-lig",
+    'sari_kart': f"{FOTMOB_BASE}/stats/season/27244/players/yellow_card/super-lig",
+    'kirmizi_kart': f"{FOTMOB_BASE}/stats/season/27244/players/red_card/super-lig"
+}
+
+# Takım ID -> Türkçe İsim eşleştirmesi
+TAKIM_SOZLUGU = {
+    "1933": "Başakşehir",
+    "3061": "Galatasaray",
+    "3057": "Fenerbahçe",
+    "3058": "Beşiktaş",
+    "3056": "Trabzonspor",
+    "3060": "Göztepe",
+    "3063": "Konyaspor",
+    "3064": "Rizespor",
+    "3065": "Alanyaspor",
+    "3066": "Gaziantep FK",
+    "3067": "Hatayspor",
+    "3069": "Antalyaspor",
+    "3073": "Kasımpaşa",
+    "3074": "Samsunspor",
+    "3075": "Kocaelispor",
+    "3077": "Kayserispor",
+    "3079": "Karagümrük",
+    "1054": "Gençlerbirliği",
+    "3059": "Eyüpspor",
+    "7496": "Bodrum FK"
 }
 
 # ============================================================
@@ -79,6 +107,7 @@ class FotMobScraper:
     
     def __init__(self):
         self.driver = None
+        self.takim_eslestirme = {}
         self.veri = {
             'puan_durumu': [],
             'gol_kralligi': [],
@@ -117,47 +146,69 @@ class FotMobScraper:
             log(f"Driver hatası: {e}", "ERROR")
             return False
     
+    def takim_adi_bul(self, takim_id):
+        """Takım ID'sinden Türkçe isim bul"""
+        return TAKIM_SOZLUGU.get(str(takim_id), f"Takım {takim_id}")
+    
     def puan_durumu_cek(self):
         """FotMob'dan puan durumunu çek"""
-        log("Puan durumu çekiliyor (FotMob)...", "STEP")
+        log("Puan durumu çekiliyor...", "STEP")
         
         try:
-            self.driver.get(FOTMOB_URLS['table'])
-            time.sleep(4)
+            self.driver.get(FOTMOB_URLS['tablo'])
+            time.sleep(3)
             
-            # Tablodaki satırları bul
-            rows = self.driver.find_elements(By.CSS_SELECTOR, "a[href*='/teams/']")
+            # JavaScript ile veri çek
+            script = """
+            return Array.from(document.querySelectorAll('a[href*="/teams/"]')).map(a => {
+                const match = a.href.match(/\\/teams\\/(\\d+)\\//);
+                const name = a.innerText.trim();
+                const row = a.closest('tr') || a.closest('div[class*="row"]');
+                let stats = [];
+                if (row) {
+                    stats = Array.from(row.querySelectorAll('td, span')).map(el => el.innerText.trim());
+                }
+                if (match && name && !name.includes('\\n') && name.length > 1) {
+                    return { id: match[1], name: name, stats: stats };
+                }
+                return null;
+            }).filter(t => t !== null);
+            """
             
-            if not rows:
-                # Alternatif selector
-                rows = self.driver.find_elements(By.CSS_SELECTOR, "div[class*='TableRow'], tr[class*='row']")
+            takimlar = self.driver.execute_script(script)
             
             puan_durumu = []
+            sira = 1
+            goruldu = set()
             
-            # Sayfa kaynağından veri çıkar
-            page_source = self.driver.page_source
-            
-            # Takım isimlerini bul
-            team_pattern = r'"name":"([^"]+)".*?"played":(\d+).*?"wins":(\d+).*?"draws":(\d+).*?"losses":(\d+).*?"scoresStr":"(\d+)-(\d+)".*?"pts":(\d+)'
-            matches = re.findall(team_pattern, page_source)
-            
-            if matches:
-                for i, match in enumerate(matches[:18], 1):
-                    takim = {
-                        'sira': i,
-                        'takim_adi': match[0],
-                        'oynanan': int(match[1]),
-                        'galibiyet': int(match[2]),
-                        'beraberlik': int(match[3]),
-                        'maglubiyet': int(match[4]),
-                        'atilan_gol': int(match[5]),
-                        'yenilen_gol': int(match[6]),
-                        'averaj': int(match[5]) - int(match[6]),
-                        'puan': int(match[7]),
-                        'form': ["G", "G", "G", "G", "G"]  # Varsayılan
-                    }
-                    puan_durumu.append(takim)
-                    log(f"   {i}. {takim['takim_adi']} - {takim['puan']} puan")
+            for takim in takimlar:
+                if takim['name'] in goruldu:
+                    continue
+                goruldu.add(takim['name'])
+                
+                # Stats dizisinden verileri çıkar
+                stats = takim.get('stats', [])
+                sayilar = [int(s) for s in stats if s.isdigit()]
+                
+                if len(sayilar) >= 7:
+                    puan_durumu.append({
+                        'sira': sira,
+                        'takim_adi': takim['name'],
+                        'oynanan': sayilar[0],
+                        'galibiyet': sayilar[1],
+                        'beraberlik': sayilar[2],
+                        'maglubiyet': sayilar[3],
+                        'atilan_gol': sayilar[4] if len(sayilar) > 4 else 0,
+                        'yenilen_gol': sayilar[5] if len(sayilar) > 5 else 0,
+                        'averaj': sayilar[4] - sayilar[5] if len(sayilar) > 5 else 0,
+                        'puan': sayilar[-1],
+                        'form': ["G", "G", "G", "G", "G"]
+                    })
+                    log(f"   {sira}. {takim['name']} - {sayilar[-1]} puan")
+                    sira += 1
+                    
+                    if sira > 18:
+                        break
             
             if puan_durumu:
                 self.veri['puan_durumu'] = puan_durumu
@@ -171,80 +222,61 @@ class FotMobScraper:
             log(f"Puan durumu hatası: {e}", "ERROR")
             return False
     
-    def istatistik_cek(self, kategori, fotmob_adi, turkce_adi):
-        """FotMob'dan istatistik çek"""
+    def istatistik_cek(self, kategori, url_anahtar, turkce_adi):
+        """FotMob'dan istatistik çek (ilk 5)"""
         log(f"{turkce_adi} verileri çekiliyor...", "STEP")
         
         try:
-            # Stats sayfasına git (ilk kez gidiyorsa)
-            current_url = self.driver.current_url
-            if 'stats' not in current_url:
-                self.driver.get(FOTMOB_URLS['stats'])
-                time.sleep(3)
+            self.driver.get(FOTMOB_URLS[url_anahtar])
+            time.sleep(3)
             
-            # "See all" veya "Show all" butonunu bul ve tıkla
-            try:
-                # Farklı olası selektorlar
-                see_all_selectors = [
-                    "button:contains('See all')",
-                    "button:contains('Show all')",
-                    "a:contains('See all')",
-                    "[data-testid='see-all']",
-                    ".see-all-button",
-                    "button[class*='see']",
-                    "button[class*='show']"
-                ]
+            # JavaScript ile oyuncu verilerini çek
+            script = """
+            return Array.from(document.querySelectorAll('a[href*="/players/"]')).slice(0, 20).map(a => {
+                const name = a.querySelector('[class*="PlayerName"], [class*="TeamOrPlayerName"]');
+                const stat = a.closest('div').querySelector('[class*="StatValue"], [class*="stat"]');
+                const teamImg = a.closest('div').querySelector('img[src*="teamlogo"]');
                 
-                for selector in see_all_selectors:
-                    try:
-                        # Tüm "See all" butonlarını bul
-                        buttons = self.driver.find_elements(By.CSS_SELECTOR, "button, a")
-                        for button in buttons:
-                            if any(text in button.text.lower() for text in ['see all', 'show all', 'tümünü gör']):
-                                try:
-                                    self.driver.execute_script("arguments[0].scrollIntoView(true);", button)
-                                    time.sleep(0.5)
-                                    button.click()
-                                    time.sleep(2)
-                                    log(f"   'See all' butonuna tıklandı", "SUCCESS")
-                                    break
-                                except:
-                                    continue
-                        break
-                    except:
-                        continue
-            except:
-                pass
+                let teamId = null;
+                if (teamImg) {
+                    const match = teamImg.src.match(/teamlogo\\/(\\d+)/);
+                    if (match) teamId = match[1];
+                }
+                
+                return {
+                    name: name ? name.innerText.trim() : a.innerText.split('\\n')[0].trim(),
+                    stat: stat ? stat.innerText.trim() : null,
+                    teamId: teamId
+                };
+            }).filter(p => p.name && p.stat);
+            """
             
-            # Sayfa kaynağından oyuncu verilerini çıkar
-            page_source = self.driver.page_source
+            oyuncular = self.driver.execute_script(script)
             
-            # JSON datayı bul
             istatistikler = []
+            goruldu = set()
             
-            # Farklı regex patternleri dene
-            patterns = [
-                r'"name":"([^"]+)"[^}]*?"teamName":"([^"]+)"[^}]*?"' + fotmob_adi + r'"[:\s]+(\d+\.?\d*)',
-                r'"participantName":"([^"]+)"[^}]*?"teamName":"([^"]+)"[^}]*?"' + fotmob_adi + r'"[:\s]+(\d+\.?\d*)',
-                r'{"name":"([^"]+)"[^}]*?"team[^"]*?":"([^"]+)"[^}]*?"' + fotmob_adi + r'"[:\s]+(\d+\.?\d*)'
-            ]
-            
-            for pattern in patterns:
-                matches = re.findall(pattern, page_source)
-                if matches and len(matches) >= 3:
-                    # İlk 5'i al
-                    for match in matches[:5]:
-                        try:
-                            sayi = float(match[2]) if '.' in match[2] else int(match[2])
-                            istatistikler.append({
-                                'oyuncu': match[0],
-                                'takim': match[1],
-                                'sayi': sayi
-                            })
-                            log(f"   {match[0]} - {sayi}", "INFO")
-                        except:
-                            continue
-                    break
+            for oyuncu in oyuncular:
+                if oyuncu['name'] in goruldu or len(istatistikler) >= 5:
+                    continue
+                goruldu.add(oyuncu['name'])
+                
+                # Stat değerini parse et
+                try:
+                    stat_str = oyuncu['stat'].replace(',', '.')
+                    sayi = float(stat_str) if '.' in stat_str else int(stat_str)
+                except:
+                    continue
+                
+                # Takım adını bul
+                takim = self.takim_adi_bul(oyuncu['teamId']) if oyuncu['teamId'] else "Bilinmiyor"
+                
+                istatistikler.append({
+                    'oyuncu': oyuncu['name'],
+                    'takim': takim,
+                    'sayi': sayi
+                })
+                log(f"   {len(istatistikler)}. {oyuncu['name']} ({takim}) - {sayi}")
             
             if istatistikler:
                 self.veri[kategori] = istatistikler
@@ -263,23 +295,41 @@ class FotMobScraper:
         log("Fikstür verileri çekiliyor...", "STEP")
         
         try:
-            self.driver.get(FOTMOB_URLS['fixtures'])
+            self.driver.get(FOTMOB_URLS['fikstur'])
             time.sleep(3)
             
-            page_source = self.driver.page_source
+            script = """
+            return Array.from(document.querySelectorAll('a[href*="/matches/"]')).slice(0, 9).map(a => {
+                const teams = a.querySelectorAll('[class*="team"], [class*="Team"]');
+                const time = a.querySelector('[class*="time"], [class*="Time"]');
+                const date = a.querySelector('[class*="date"], [class*="Date"]');
+                
+                let home = '', away = '';
+                if (teams.length >= 2) {
+                    home = teams[0].innerText.trim();
+                    away = teams[1].innerText.trim();
+                }
+                
+                return {
+                    home: home,
+                    away: away,
+                    date: date ? date.innerText.trim() : 'Yakında',
+                    time: time ? time.innerText.trim() : '--:--'
+                };
+            }).filter(m => m.home && m.away);
+            """
             
-            # Maç verilerini çıkar
-            match_pattern = r'"home":\{"name":"([^"]+)".*?"away":\{"name":"([^"]+)"'
-            matches = re.findall(match_pattern, page_source)
+            maclar = self.driver.execute_script(script)
             
             fikstur = []
-            for i, match in enumerate(matches[:9]):
+            for mac in maclar[:9]:
                 fikstur.append({
-                    'ev_sahibi': match[0],
-                    'deplasman': match[1],
-                    'tarih': 'Yakında',
-                    'saat': '--:--'
+                    'ev_sahibi': mac['home'],
+                    'deplasman': mac['away'],
+                    'tarih': mac['date'],
+                    'saat': mac['time']
                 })
+                log(f"   {mac['home']} vs {mac['away']}")
             
             if fikstur:
                 self.veri['fikstur'] = fikstur
@@ -308,17 +358,35 @@ class FotMobScraper:
             if self.puan_durumu_cek():
                 basarili += 1
             
+            # İstatistikler
+            if self.istatistik_cek('gol_kralligi', 'goller', 'Gol Krallığı'):
+                basarili += 1
+            
+            if self.istatistik_cek('asist_kralligi', 'asistler', 'Asist Krallığı'):
+                basarili += 1
+            
+            if self.istatistik_cek('en_iyi_rating', 'rating', 'En İyi Rating'):
+                basarili += 1
+            
+            if self.istatistik_cek('kacirilan_firsatlar', 'kacirilan', 'Kaçırılan Fırsatlar'):
+                basarili += 1
+            
+            if self.istatistik_cek('gol_yemeden', 'gol_yemeden', 'Gol Yemeden'):
+                basarili += 1
+            
+            if self.istatistik_cek('sari_kartlar', 'sari_kart', 'Sarı Kartlar'):
+                basarili += 1
+            
+            if self.istatistik_cek('kirmizi_kartlar', 'kirmizi_kart', 'Kırmızı Kartlar'):
+                basarili += 1
+            
             # Fikstür
             if self.fikstur_cek():
                 basarili += 1
             
-            # İstatistikler - Gol Krallığı
-            if self.istatistik_cek('gol_kralligi', 'goals', 'Gol Krallığı'):
-                basarili += 1
-            
             print("=" * 50)
             if basarili > 0:
-                log(f"VERİ ÇEKME TAMAMLANDI ({basarili} başarılı)", "SUCCESS")
+                log(f"VERİ ÇEKME TAMAMLANDI ({basarili}/9 başarılı)", "SUCCESS")
             else:
                 log("VERİ ÇEKİLEMEDİ - Mevcut veriler korunacak", "WARNING")
             print("=" * 50 + "\n")
@@ -332,10 +400,6 @@ class FotMobScraper:
             if self.driver:
                 self.driver.quit()
                 log("Chrome driver kapatıldı")
-    
-    def kapat(self):
-        if self.driver:
-            self.driver.quit()
 
 # ============================================================
 # APP.JS GÜNCELLEYICI
@@ -375,27 +439,31 @@ class AppJSGuncelleyici:
             
             guncellendi = False
             
-            # Puan durumunu güncelle
+            # Puan durumu
             if self.veri.get('puan_durumu') and len(self.veri['puan_durumu']) >= 10:
-                yeni_puan = self.puan_durumu_js_olustur()
-                icerik = re.sub(
-                    r'const REAL_STANDINGS = \[[\s\S]*?\];',
-                    yeni_puan,
-                    icerik
-                )
+                yeni = self.puan_durumu_js_olustur()
+                icerik = re.sub(r'const REAL_STANDINGS = \[[\s\S]*?\];', yeni, icerik)
                 log("   Puan durumu güncellendi", "SUCCESS")
                 guncellendi = True
             
-            # Gol krallığını güncelle
-            if self.veri.get('gol_kralligi') and len(self.veri['gol_kralligi']) >= 3:
-                yeni_goller = self.istatistik_js_olustur('TOP_SCORERS', self.veri['gol_kralligi'])
-                icerik = re.sub(
-                    r'const TOP_SCORERS = \[[\s\S]*?\];',
-                    yeni_goller,
-                    icerik
-                )
-                log("   Gol krallığı güncellendi", "SUCCESS")
-                guncellendi = True
+            # İstatistikler eşleştirmesi
+            eslesme = {
+                'gol_kralligi': 'TOP_SCORERS',
+                'asist_kralligi': 'TOP_ASSISTS',
+                'en_iyi_rating': 'TOP_RATING',
+                'kacirilan_firsatlar': 'MISSED_CHANCES',
+                'gol_yemeden': 'CLEAN_SHEETS',
+                'sari_kartlar': 'YELLOW_CARDS',
+                'kirmizi_kartlar': 'RED_CARDS'
+            }
+            
+            for kategori, js_degisken in eslesme.items():
+                if self.veri.get(kategori) and len(self.veri[kategori]) >= 3:
+                    yeni = self.istatistik_js_olustur(js_degisken, self.veri[kategori])
+                    pattern = rf'const {js_degisken} = \[[\s\S]*?\];'
+                    icerik = re.sub(pattern, yeni, icerik)
+                    log(f"   {js_degisken} güncellendi", "SUCCESS")
+                    guncellendi = True
             
             if guncellendi:
                 with open(self.app_js_yolu, 'w', encoding='utf-8') as f:
@@ -454,20 +522,12 @@ def ana():
     print("\n" + "=" * 50)
     print("⚽ SÜPER LİG 360 - OTOMATİK GÜNCELLEME")
     print(f"📅 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("📊 Veri Kaynağı: FotMob")
+    print("📊 Veri Kaynağı: FotMob (Türkçe)")
     print("=" * 50)
     
     if not SELENIUM_AVAILABLE:
         log("Selenium yüklü değil!", "WARNING")
         log("Yüklemek için: pip install selenium webdriver-manager", "INFO")
-        print("\n" + "-" * 50)
-        print("📋 MANUEL GÜNCELLEME MODU")
-        print("-" * 50)
-        print("""
-1. FotMob'a git: https://www.fotmob.com/leagues/71/table/super-lig
-2. web/app.js dosyasını güncelle
-3. Bu scripti tekrar çalıştır
-        """)
         git_gonder()
         return
     
@@ -477,8 +537,8 @@ def ana():
     scraper = FotMobScraper()
     scraper.tum_verileri_cek()
     
-    # 2. Veri çekildiyse app.js güncelle
-    if scraper.veri.get('puan_durumu') or scraper.veri.get('gol_kralligi'):
+    # 2. app.js güncelle
+    if any(scraper.veri.values()):
         guncelleyici = AppJSGuncelleyici(scraper.veri)
         guncelleyici.dosya_guncelle()
     else:
