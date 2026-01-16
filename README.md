@@ -11,96 +11,84 @@
 
 ---
 
-## 📸 Ekran Görüntüleri
-
-| Puan Durumu | İstatistikler | Fikstür |
-|-------------|---------------|---------|
-| UEFA bölgeleri renk kodlu | Gol/Asist krallığı | AI maç tahminleri |
-| Son 5 maç formu | Kart istatistikleri | Takım formları |
-
----
-
 ## ✨ Özellikler
 
 ### 🏆 Puan Durumu
 - 18 takımın güncel sıralaması
-- **UEFA Bölgeleri:**
-  - 🔵 Şampiyonlar Ligi (1. sıra)
-  - 🟠 Avrupa Ligi (2-3. sıra)
-  - 🟢 Konferans Ligi (4-5. sıra)
-  - 🔴 Küme düşme (16-18. sıra)
+- **UEFA Bölgeleri** renk kodlu
 - Son 5 maç formu (G/B/M rozetleri)
 
-### 📊 İstatistikler
-- ⚽ **Gol Krallığı** - En golcü 7 oyuncu
-- 🅰️ **Asist Krallığı** - En çok asist yapan 6 oyuncu
-- 🟡 **Sarı Kartlar** - Top 5
-- 🔴 **Kırmızı Kartlar** - Top 5
+### 📊 İstatistikler (6 Kategori - FotMob)
+| Kategori | Açıklama |
+|----------|----------|
+| ⚽ **Gol Krallığı** | En çok gol atan 5 oyuncu |
+| 🅰️ **Asist Krallığı** | En çok asist yapan 5 oyuncu |
+| ⭐ **Rating** | En yüksek FotMob puanı |
+| 🧤 **Gol Yemeden** | Kalesini gole kapatan kaleciler |
+| 🟡 **Sarı Kartlar** | En çok sarı kart gören 5 oyuncu |
+| 🔴 **Kırmızı Kartlar** | En çok kırmızı kart gören 5 oyuncu |
 
 ### 📅 Fikstür & AI Tahmin
 - Haftalık maç programı
-- Her takımın son 5 maç formu
-- 🤖 **AI Destekli Tahminler:**
-  - Puan durumu analizi
-  - Form skoru hesaplama
-  - Ev sahibi avantajı (%15)
-  - Güven yüzdesi
+- 🤖 AI destekli maç tahminleri
 
 ### 🎨 Dinamik Tasarım
 - Her sekme için farklı arka plan görseli
-- Glassmorphism efektleri
-- Responsive mobil tasarım
-- Yumuşak geçiş animasyonları
+- Mobil uyumlu responsive tasarım
 
 ---
 
-## 🔄 Tek Tuşla Güncelleme
+## 🔄 Otomatik Güncelleme (FotMob)
 
 ### Kurulum
 ```bash
 pip install selenium webdriver-manager
 ```
 
-### Çalıştırma
+### Kullanım
 ```bash
 python update_weekly.py
 ```
+
+### Veri Kaynakları (FotMob Türkçe)
+
+| Veri | URL |
+|------|-----|
+| Puan Durumu | fotmob.com/tr/leagues/71/table/super-lig |
+| Gol Krallığı | fotmob.com/.../players/goals/super-lig |
+| Asist | fotmob.com/.../players/goal_assist/super-lig |
+| Rating | fotmob.com/.../players/rating/super-lig |
+| Gol Yemeden | fotmob.com/.../players/clean_sheet/super-lig |
+| Sarı Kart | fotmob.com/.../players/yellow_card/super-lig |
+| Kırmızı Kart | fotmob.com/.../players/red_card/super-lig |
 
 ### Terminal Çıktısı
 ```
 ==================================================
 ⚽ SÜPER LİG 360 - OTOMATİK GÜNCELLEME
-📅 2026-01-17 00:00:00
+📅 2026-01-17 01:08:56
+📊 Veri Kaynağı: FotMob (Türkçe)
+==================================================
+[01:08:56] ℹ️  Otomatik scraping modu (FotMob)
+
+==================================================
+[01:08:56] 📌 VERİ ÇEKME İŞLEMİ BAŞLADI (FotMob)
+==================================================
+[01:08:56] 📌 Chrome driver başlatılıyor...
+[01:09:03] ✅ Chrome driver hazır
+[01:09:03] 📌 Puan durumu çekiliyor...
+[01:09:08] ✅ 18 takım verisi alındı
+[01:09:08] 📌 Gol Krallığı verileri çekiliyor...
+[01:09:12] ✅ 5 Gol Krallığı verisi alındı
+...
+==================================================
+[01:10:30] ✅ VERİ ÇEKME TAMAMLANDI (9/9 başarılı)
 ==================================================
 
-[00:00:01] 📌 Chrome driver başlatılıyor...
-[00:00:03] ✅ Chrome driver hazır
-[00:00:04] 📌 Puan durumu çekiliyor...
-[00:00:05]    1. Galatasaray - 42 puan
-[00:00:05]    2. Fenerbahçe - 39 puan
-[00:00:05]    3. Trabzonspor - 35 puan
-           ...
-[00:00:10] ✅ 18 takım verisi alındı
-[00:00:11] 📌 Gol Krallığı verileri çekiliyor...
-[00:00:12] ✅ 7 Gol Krallığı verisi alındı
-[00:00:13] 📌 Asist Krallığı verileri çekiliyor...
-[00:00:14] ✅ 6 Asist Krallığı verisi alındı
-[00:00:15] 📌 Sarı Kart verileri çekiliyor...
-[00:00:16] ✅ 5 Sarı Kart verisi alındı
-[00:00:17] 📌 Kırmızı Kart verileri çekiliyor...
-[00:00:18] ✅ 5 Kırmızı Kart verisi alındı
-==================================================
-✅ TÜM VERİLER ÇEKİLDİ
-==================================================
-
-[00:00:19] 📌 web/app.js güncelleniyor...
-[00:00:19] ✅ Puan durumu güncellendi
-[00:00:19] ✅ Gol krallığı güncellendi
-[00:00:20] ✅ web/app.js başarıyla güncellendi
-[00:00:21] 📌 GitHub'a gönderiliyor...
-[00:00:21] ✅ Dosyalar eklendi
-[00:00:22] ✅ Commit: Otomatik güncelleme - 2026-01-17 00:00
-[00:00:25] ✅ Push başarılı!
+[01:10:30] 📌 web/app.js güncelleniyor...
+[01:10:30] ✅ web/app.js başarıyla güncellendi
+[01:10:31] 📌 GitHub'a gönderiliyor...
+[01:10:35] ✅ Push başarılı!
 
 ==================================================
 🏁 GÜNCELLEME TAMAMLANDI
@@ -108,225 +96,25 @@ python update_weekly.py
 ==================================================
 ```
 
-### Güncelleme Akışı
-
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Google'dan     │ ──▶ │   web/app.js    │ ──▶ │    GitHub       │
-│  Veri Çek       │     │   Güncelle      │     │    Push         │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-         │                       │                       │
-         ▼                       ▼                       ▼
-   • Puan durumu           • REAL_STANDINGS       • Otomatik commit
-   • Gol krallığı          • TOP_SCORERS          • GitHub Actions
-   • Asist krallığı        • TOP_ASSISTS          • Website deploy
-   • Kartlar               • YELLOW/RED_CARDS
-```
-
----
-
-## 🛠️ Teknoloji Stack
-
-| Kategori | Teknoloji |
-|----------|-----------|
-| **Frontend** | HTML5, CSS3, JavaScript (ES6+) |
-| **Styling** | Glassmorphism, CSS Grid, Flexbox |
-| **Scraping** | Python 3, Selenium, webdriver-manager |
-| **Database** | PostgreSQL (Docker) |
-| **Data Transform** | dbt (Data Build Tool) |
-| **Deployment** | GitHub Pages, GitHub Actions |
-| **Görseller** | Unsplash (Ücretsiz) |
-
 ---
 
 ## 📁 Proje Yapısı
 
 ```
 Superlig360/
-│
-├── 🌐 web/                      # Frontend (Canlı Website)
-│   ├── index.html               # Ana sayfa
-│   ├── style.css                # Tüm stiller (~800 satır)
-│   ├── app.js                   # JavaScript + Veri (~280 satır)
-│   ├── api.py                   # Flask API (opsiyonel)
-│   └── requirements.txt
-│
-├── 📊 dashboard/                # Streamlit Dashboard (Opsiyonel)
-│   ├── app.py                   # Dashboard uygulaması
-│   └── requirements.txt
-│
-├── 🔍 scraper/                  # Veri Çekme Araçları
-│   ├── main.py                  # Ana scraper
-│   ├── google_scraper.py        # Google scraper
-│   ├── Dockerfile               # Docker yapılandırması
-│   └── requirements.txt
-│
-├── 🗄️ sql/                      # Veritabanı
-│   ├── init.sql                 # Tablo oluşturma
-│   ├── seed_data.sql            # Örnek veri
-│   └── analysis.sql             # Analiz sorguları
-│
-├── 📈 superlig360_dbt/          # dbt Modelleri
-│   ├── dbt_project.yml          # dbt yapılandırması
-│   ├── profiles.yml             # Profil ayarları
-│   ├── models/                  # Veri modelleri
-│   │   └── staging/             # Staging modelleri
-│   └── snapshots/               # Geçmiş verileri
-│
-├── ⚙️ .github/workflows/        # CI/CD
-│   └── deploy.yml               # Otomatik deployment
-│
-├── 🔄 update_weekly.py          # TEK TUŞLA GÜNCELLEME
-├── 📖 DOCUMENTATION.txt         # Detaylı dokümantasyon
-├── 🐳 docker-compose.yml        # Docker yapılandırması
-├── 📋 requirements.txt          # Python bağımlılıkları
-└── 📄 README.md                 # Bu dosya
+├── web/                      # Frontend
+│   ├── index.html            # Ana sayfa
+│   ├── style.css             # Stiller
+│   └── app.js                # JavaScript + Veri
+├── update_weekly.py          # 🔄 FotMob Scraper
+├── DOCUMENTATION.txt         # 📖 Detaylı dokümantasyon
+├── README.md                 # Bu dosya
+└── .github/workflows/        # CI/CD
 ```
 
 ---
 
-## 🚀 Kurulum
-
-### Ön Gereksinimler
-
-| Gereksinim | Versiyon | Kontrol Komutu |
-|------------|----------|----------------|
-| Python | 3.8+ | `python --version` |
-| pip | Son sürüm | `pip --version` |
-| Git | Son sürüm | `git --version` |
-| Chrome | Son sürüm | Tarayıcı |
-
----
-
-### 1️⃣ Projeyi İndir
-
-```bash
-# GitHub'dan klonla
-git clone https://github.com/KAAN482/Superlig360.git
-
-# Proje klasörüne gir
-cd Superlig360
-```
-
----
-
-### 2️⃣ Requirements Dosyaları
-
-Projede birden fazla `requirements.txt` dosyası var:
-
-| Dosya | İçerik | Kullanım |
-|-------|--------|----------|
-| `requirements.txt` | Ana bağımlılıklar | `pip install -r requirements.txt` |
-| `web/requirements.txt` | Flask API | Web API için |
-| `dashboard/requirements.txt` | Streamlit | Dashboard için |
-| `scraper/requirements.txt` | Selenium | Scraper için |
-
-**Tüm bağımlılıkları yükle:**
-```bash
-# Ana bağımlılıklar
-pip install -r requirements.txt
-
-# Otomatik güncelleme için (Selenium)
-pip install selenium webdriver-manager
-
-# Dashboard için (opsiyonel)
-pip install -r dashboard/requirements.txt
-
-# Web API için (opsiyonel)
-pip install -r web/requirements.txt
-```
-
-**Tek satırda tümü:**
-```bash
-pip install selenium webdriver-manager streamlit flask psycopg2-binary
-```
-
----
-
-### 3️⃣ Kullanım Senaryoları
-
-#### A) Sadece Website Görüntüleme
-```bash
-# Tarayıcıda aç (kurulum gerektirmez)
-start web/index.html      # Windows
-open web/index.html       # Mac
-xdg-open web/index.html   # Linux
-```
-
-#### B) Otomatik Veri Güncelleme
-```bash
-# 1. Selenium yükle
-pip install selenium webdriver-manager
-
-# 2. Script'i çalıştır
-python update_weekly.py
-
-# Bu işlem:
-# - Google'dan verileri çeker
-# - web/app.js dosyasını günceller
-# - GitHub'a push eder
-```
-
-#### C) Streamlit Dashboard
-```bash
-# 1. Bağımlılıkları yükle
-pip install -r dashboard/requirements.txt
-
-# 2. Dashboard'u başlat
-streamlit run dashboard/app.py
-
-# Tarayıcıda: http://localhost:8501
-```
-
-#### D) Flask API
-```bash
-# 1. Bağımlılıkları yükle
-pip install -r web/requirements.txt
-
-# 2. API'yi başlat
-python web/api.py
-
-# API: http://localhost:5000
-```
-
-#### E) Full Stack (PostgreSQL + dbt)
-```bash
-# 1. Docker Desktop'ı başlat
-
-# 2. Veritabanını başlat
-docker-compose up -d
-
-# 3. Veritabanı bağlantısını kontrol et
-# Host: localhost, Port: 5432
-# Database: superlig360, User: postgres
-
-# 4. dbt kurulumu
-pip install dbt-postgres
-cd superlig360_dbt
-dbt deps      # Paketleri indir
-dbt run       # Modelleri çalıştır
-dbt test      # Testleri çalıştır
-```
-
----
-
-### 4️⃣ Doğrulama
-
-Kurulumu doğrula:
-```bash
-# Python sürümü
-python --version
-
-# Selenium yüklü mü?
-python -c "import selenium; print('Selenium OK')"
-
-# Chrome driver test
-python -c "from selenium import webdriver; print('WebDriver OK')"
-```
-
----
-
-### 5️⃣ Hızlı Başlangıç (TL;DR)
+## 🚀 Hızlı Başlangıç
 
 ```bash
 # 1. Klonla
@@ -345,56 +133,12 @@ start web/index.html
 
 ---
 
-## 🤖 AI Tahmin Sistemi
-
-```
-Tahmin Formülü:
-─────────────────────────────────────────────
-
-Ev Gücü = (PPG × 10 + Form Skoru + Averaj) × 1.15
-Deplasman Gücü = PPG × 10 + Form Skoru + Averaj
-
-PPG = Toplam Puan ÷ Oynanan Maç
-Form Skoru = Son 5 maç (ağırlıklı)
-Averaj = (Atılan - Yenilen) ÷ Oynanan Maç
-
-Form Ağırlıkları: [1.0, 1.2, 1.4, 1.6, 2.0]
-  Galibiyet = 3 puan × ağırlık
-  Beraberlik = 1 puan × ağırlık
-  Mağlubiyet = 0 puan
-
-Karar:
-  Fark > 4    → Ev sahibi (%60-85)
-  Fark < -4   → Deplasman (%60-85)
-  -4 < Fark < 4 → Beraberlik (%45)
-```
-
----
-
 ## 📖 Dokümantasyon
 
-Detaylı kullanım kılavuzu: [`DOCUMENTATION.txt`](DOCUMENTATION.txt)
-
-İçerik:
-- Proje hakkında
-- Tüm özellikler
-- Veri yapıları
-- AI tahmin sistemi
-- Sorun giderme
-- Geliştirme rehberi
+Detaylı kullanım: [`DOCUMENTATION.txt`](DOCUMENTATION.txt)
 
 ---
 
-## 📝 Lisans
-
-MIT License © 2026 KAAN482
-
----
-
-<div align="center">
-
-**⚽ Süper Lig 360**
-
-[Website](https://kaan482.github.io/Superlig360/) • [GitHub](https://github.com/KAAN482/Superlig360) • [Dokümantasyon](DOCUMENTATION.txt)
-
-</div>
+**Geliştirici:** KAAN482  
+**Lisans:** MIT  
+**Veri Kaynağı:** [FotMob](https://www.fotmob.com)

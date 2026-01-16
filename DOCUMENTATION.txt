@@ -6,7 +6,7 @@ Proje Adı      : Süper Lig 360
 Geliştirici    : KAAN482
 Website        : https://kaan482.github.io/Superlig360/
 GitHub         : https://github.com/KAAN482/Superlig360
-Versiyon       : 1.0.0
+Veri Kaynağı   : FotMob (https://www.fotmob.com)
 Son Güncelleme : Ocak 2026
 
 ================================================================================
@@ -15,33 +15,20 @@ Son Güncelleme : Ocak 2026
 
 1. PROJE HAKKINDA
 2. ÖZELLİKLER
-3. TEKNOLOJİLER
+3. VERİ KAYNAKLARI (FotMob)
 4. DOSYA YAPISI
 5. KURULUM
-6. KULLANIM
-7. HAFTALIK GÜNCELLEME
-8. VERİ YAPILARI
-9. AI TAHMİN SİSTEMİ
-10. GITHUB PAGES DEPLOYMENT
-11. SORUN GİDERME
-12. GELİŞTİRME
+6. HAFTALIK GÜNCELLEME
+7. VERİ YAPILARI
+8. AI TAHMİN SİSTEMİ
 
 ================================================================================
                           1. PROJE HAKKINDA
 ================================================================================
 
 Süper Lig 360, Türkiye Süper Lig için tasarlanmış modern bir analitik 
-dashboard'dur. Proje şu özellikleri sunar:
-
-- Güncel puan durumu ve takım sıralamaları
-- Gol ve asist krallığı istatistikleri
-- Kart istatistikleri (sarı/kırmızı)
-- Haftalık fikstür ve maç programı
-- AI destekli maç tahminleri
-- Dinamik ve responsive tasarım
-
-Proje tamamen statik HTML/CSS/JavaScript ile yazılmıştır ve GitHub Pages
-üzerinde ücretsiz olarak barındırılmaktadır.
+dashboard'dur. FotMob'dan güncel verileri çeker ve GitHub Pages üzerinde
+ücretsiz olarak barındırılır.
 
 ================================================================================
                             2. ÖZELLİKLER
@@ -50,82 +37,65 @@ Proje tamamen statik HTML/CSS/JavaScript ile yazılmıştır ve GitHub Pages
 2.1 PUAN DURUMU SAYFASI
 -----------------------
 - 18 takımın güncel sıralaması
-- Oynanan maç, galibiyet, beraberlik, mağlubiyet sayıları
-- Atılan/yenilen gol ve averaj
+- UEFA bölgeleri renk kodlu:
+  🔵 Şampiyonlar Ligi (1. sıra)
+  🟠 Avrupa Ligi (2-3. sıra)
+  🟢 Konferans Ligi (4-5. sıra)
+  🔴 Küme düşme (16-18. sıra)
 - Son 5 maç formu (G/B/M rozetleri)
 
-Renk Kodları:
-  🔵 Mavi   : UEFA Şampiyonlar Ligi (1. sıra)
-  🟠 Turuncu: UEFA Avrupa Ligi (2-3. sıra)
-  🟢 Yeşil  : UEFA Konferans Ligi (4-5. sıra)
-  🔴 Kırmızı: Küme düşme hattı (16-18. sıra)
+2.2 İSTATİSTİKLER (6 KATEGORİ)
+------------------------------
+a) ⚽ Gol Krallığı - En çok gol atan 5 oyuncu
+b) 🅰️ Asist Krallığı - En çok asist yapan 5 oyuncu
+c) ⭐ Rating - En yüksek FotMob puanı alan 5 oyuncu
+d) 🧤 Gol Yemeden - Kalesini gole kapatan kaleciler
+e) 🟡 Sarı Kartlar - En çok sarı kart gören 5 oyuncu
+f) 🔴 Kırmızı Kartlar - En çok kırmızı kart gören 5 oyuncu
 
-2.2 İSTATİSTİKLER SAYFASI
--------------------------
-Dört alt sekme içerir:
-
-a) Gol Krallığı
-   - En çok gol atan 7 oyuncu
-   - Oyuncu adı, takım ve gol sayısı
-
-b) Asist Krallığı
-   - En çok asist yapan 6 oyuncu
-   - Oyuncu adı, takım ve asist sayısı
-
-c) Sarı Kartlar
-   - En çok sarı kart gören 5 oyuncu
-
-d) Kırmızı Kartlar
-   - En çok kırmızı kart gören 5 oyuncu
-
-2.3 FİKSTÜR SAYFASI
--------------------
+2.3 FİKSTÜR & AI TAHMİN
+-----------------------
 - Haftalık maç programı
-- Ev sahibi ve deplasman takımları
-- Maç tarihi ve saati
-- Her takımın son 5 maç formu
-- Takımların lig sıralaması
+- 🤖 AI destekli maç tahminleri
+- Puan durumu ve form analizine dayalı
 
-AI Tahmini:
-  - Her maç için yapay zeka tahmini
-  - Kazanma olasılığı yüzdesi
-  - Puan durumu ve form analizine dayalı
-
-2.4 DİNAMİK ARKA PLAN
----------------------
-Her sekme için farklı arka plan görseli:
-  - Puan Durumu: Stadyum tribün görseli (mavi ton)
-  - İstatistikler: Futbol sahası (yeşil ton)  
-  - Fikstür: Gece maçı atmosferi (mor ton)
-
-Sekmeler arası geçişte yumuşak animasyon efekti.
+2.4 DİNAMİK TASARIM
+-------------------
+- Her sekme için farklı arka plan görseli
+- Glassmorphism efektleri
+- Mobil uyumlu responsive tasarım
 
 ================================================================================
-                           3. TEKNOLOJİLER
+                     3. VERİ KAYNAKLARI (FotMob)
 ================================================================================
 
-Frontend:
-  - HTML5
-  - CSS3 (Flexbox, Grid, Glassmorphism)
-  - JavaScript (ES6+, Vanilla)
+Tüm veriler FotMob'dan çekilmektedir. URL'ler Türkçe versiyondur.
 
-Styling:
-  - Google Fonts (Inter)
-  - CSS Variables
-  - Responsive Design
-  - Dark Theme
+3.1 PUAN DURUMU
+https://www.fotmob.com/tr/leagues/71/table/super-lig
 
-Görseller:
-  - Unsplash (Ücretsiz, ticari kullanıma açık)
+3.2 İSTATİSTİKLER (Sezon 2025/2026 - ID: 27244)
 
-Deployment:
-  - GitHub Pages (Ücretsiz hosting)
-  - GitHub Actions (CI/CD)
+Gol Krallığı:
+https://www.fotmob.com/leagues/71/stats/season/27244/players/goals/super-lig
 
-Scraping (Opsiyonel):
-  - Python 3.x
-  - Selenium WebDriver
-  - webdriver-manager
+Asist Krallığı:
+https://www.fotmob.com/leagues/71/stats/season/27244/players/goal_assist/super-lig
+
+Rating:
+https://www.fotmob.com/leagues/71/stats/season/27244/players/rating/super-lig
+
+Kalesini Gole Kapatanlar:
+https://www.fotmob.com/leagues/71/stats/season/27244/players/clean_sheet/super-lig
+
+Sarı Kartlar:
+https://www.fotmob.com/leagues/71/stats/season/27244/players/yellow_card/super-lig
+
+Kırmızı Kartlar:
+https://www.fotmob.com/leagues/71/stats/season/27244/players/red_card/super-lig
+
+3.3 FİKSTÜR
+https://www.fotmob.com/tr/leagues/71/fixtures/super-lig?group=by-round
 
 ================================================================================
                           4. DOSYA YAPISI
@@ -133,161 +103,141 @@ Scraping (Opsiyonel):
 
 Superlig360/
 │
-├── web/                          # Ana website dosyaları
+├── web/                          # Frontend dosyaları
 │   ├── index.html                # Ana HTML sayfası
 │   ├── style.css                 # Tüm CSS stilleri
 │   └── app.js                    # JavaScript + Veri
 │
-├── dashboard/                    # Streamlit dashboard (opsiyonel)
-│   ├── app.py                    # Dashboard uygulaması
-│   └── requirements.txt          # Python bağımlılıkları
-│
-├── scraper/                      # Veri çekme araçları
-│   ├── main.py                   # Ana scraper
-│   ├── google_scraper.py         # Google scraper
-│   ├── Dockerfile                # Docker yapılandırması
-│   └── requirements.txt          # Bağımlılıklar
-│
-├── sql/                          # Veritabanı dosyaları
-│   ├── init.sql                  # Tablo oluşturma
-│   ├── seed_data.sql             # Örnek veri
-│   └── analysis.sql              # Analiz sorguları
-│
-├── superlig360_dbt/              # DBT modelleri
-│   ├── dbt_project.yml           # DBT yapılandırması
-│   ├── profiles.yml              # Profil ayarları
-│   ├── models/                   # Veri modelleri
-│   └── snapshots/                # Geçmiş verileri
-│
-├── logs/                         # Güncelleme logları
-│   └── update_YYYYMMDD_HHMMSS.log
+├── update_weekly.py              # 🔄 FotMob Scraper (Otomatik güncelleme)
+├── README.md                     # Proje açıklaması
+├── DOCUMENTATION.txt             # Bu dosya
 │
 ├── .github/workflows/            # GitHub Actions
 │   └── deploy.yml                # Otomatik deployment
 │
-├── update_weekly.py              # Tek tuşla güncelleme scripti
-├── README.md                     # Proje açıklaması
-├── DOCUMENTATION.txt             # Bu dosya
-├── docker-compose.yml            # Docker yapılandırması
-├── requirements.txt              # Ana bağımlılıklar
 └── .gitignore                    # Git ignore listesi
 
 ================================================================================
                             5. KURULUM
 ================================================================================
 
-5.1 TEMEL KURULUM (Sadece website için)
----------------------------------------
-Herhangi bir kurulum gerektirmez. web/index.html dosyasını tarayıcıda açın.
+5.1 ÖN GEREKSİNİMLER
+--------------------
+- Python 3.8+
+- pip
+- Git
+- Google Chrome (Selenium için)
 
-5.2 GELİŞTİRİCİ KURULUMU
-------------------------
+5.2 TEMEL KURULUM
+-----------------
 
 # Projeyi klonla
 git clone https://github.com/KAAN482/Superlig360.git
 cd Superlig360
 
-# Python sanal ortam (opsiyonel)
-python -m venv venv
-venv\Scripts\activate  # Windows
-source venv/bin/activate  # Linux/Mac
-
-# Bağımlılıkları yükle
+# Selenium ve webdriver-manager yükle
 pip install selenium webdriver-manager
 
-5.3 DOCKER KURULUMU (Veritabanı için)
--------------------------------------
+5.3 DOĞRULAMA
+-------------
 
-# Docker Desktop'ı başlat
-docker-compose up -d
+# Python sürümü
+python --version
 
-# PostgreSQL bağlantısı
-Host: localhost
-Port: 5432
-Database: superlig360
-User: postgres
-Password: password
+# Selenium kontrolü
+python -c "import selenium; print('Selenium OK')"
 
 ================================================================================
-                            6. KULLANIM
+                       6. HAFTALIK GÜNCELLEME
 ================================================================================
 
-6.1 WEBSİTE KULLANIMI
----------------------
-1. https://kaan482.github.io/Superlig360/ adresine gidin
-2. Üst menüden istediğiniz sekmeyi seçin:
-   - Puan Durumu: Lig tablosu
-   - İstatistikler: Oyuncu istatistikleri
-   - Fikstür: Maç programı ve tahminler
+6.1 OTOMATİK GÜNCELLEME
+-----------------------
 
-6.2 YEREL GELİŞTİRME
---------------------
-1. web/index.html dosyasını tarayıcıda açın
-2. Değişiklikleri yapın
-3. Sayfayı yenileyin
+python update_weekly.py
 
-6.3 VERİ GÜNCELLEMESİ
----------------------
-Bkz. Bölüm 7: Haftalık Güncelleme
+Bu komut şunları yapar:
+1. Chrome driver'ı headless modda başlatır
+2. FotMob'dan puan durumunu çeker
+3. 6 istatistik kategorisini çeker (her birinden ilk 5)
+4. web/app.js dosyasını otomatik günceller
+5. Değişiklikleri GitHub'a push eder
+6. GitHub Actions website'i otomatik günceller
+
+6.2 TERMİNAL ÇIKTISI ÖRNEĞİ
+---------------------------
+
+==================================================
+⚽ SÜPER LİG 360 - OTOMATİK GÜNCELLEME
+📅 2026-01-17 01:08:56
+📊 Veri Kaynağı: FotMob (Türkçe)
+==================================================
+[01:08:56] ℹ️  Otomatik scraping modu (FotMob)
+
+==================================================
+[01:08:56] 📌 VERİ ÇEKME İŞLEMİ BAŞLADI (FotMob)
+==================================================
+[01:08:56] 📌 Chrome driver başlatılıyor...
+[01:09:03] ✅ Chrome driver hazır
+[01:09:03] 📌 Puan durumu çekiliyor...
+[01:09:08]    1. Galatasaray - 42 puan
+[01:09:08]    2. Fenerbahçe - 39 puan
+...
+[01:09:08] ✅ 18 takım verisi alındı
+
+[01:09:09] 📌 Gol Krallığı verileri çekiliyor...
+[01:09:12]    1. Eldor Shomurodov (Başakşehir) - 12
+[01:09:12]    2. Paul Onuachu (Trabzonspor) - 11
+...
+[01:09:12] ✅ 5 Gol Krallığı verisi alındı
+
+[01:09:13] 📌 Asist Krallığı verileri çekiliyor...
+[01:09:16] ✅ 5 Asist Krallığı verisi alındı
+
+[01:09:17] 📌 En İyi Rating verileri çekiliyor...
+[01:09:20] ✅ 5 En İyi Rating verisi alındı
+
+[01:09:21] 📌 Gol Yemeden verileri çekiliyor...
+[01:09:24] ✅ 5 Gol Yemeden verisi alındı
+
+[01:09:25] 📌 Sarı Kartlar verileri çekiliyor...
+[01:09:28] ✅ 5 Sarı Kartlar verisi alındı
+
+[01:09:29] 📌 Kırmızı Kartlar verileri çekiliyor...
+[01:09:32] ✅ 5 Kırmızı Kartlar verisi alındı
+
+[01:09:33] 📌 Fikstür verileri çekiliyor...
+[01:09:36] ✅ 9 maç verisi alındı
+
+==================================================
+[01:09:36] ✅ VERİ ÇEKME TAMAMLANDI (9/9 başarılı)
+==================================================
+
+[01:09:36] 📌 web/app.js güncelleniyor...
+[01:09:36] ✅ Puan durumu güncellendi
+[01:09:36] ✅ TOP_SCORERS güncellendi
+[01:09:36] ✅ TOP_ASSISTS güncellendi
+[01:09:36] ✅ TOP_RATING güncellendi
+[01:09:36] ✅ CLEAN_SHEETS güncellendi
+[01:09:36] ✅ YELLOW_CARDS güncellendi
+[01:09:36] ✅ RED_CARDS güncellendi
+[01:09:36] ✅ web/app.js başarıyla güncellendi
+
+[01:09:37] 📌 GitHub'a gönderiliyor...
+[01:09:37] ✅ Dosyalar eklendi
+[01:09:38] ✅ Commit: Otomatik güncelleme - 2026-01-17 01:09
+[01:09:42] ✅ Push başarılı!
+
+==================================================
+🏁 GÜNCELLEME TAMAMLANDI
+🌐 Website: https://kaan482.github.io/Superlig360/
+==================================================
 
 ================================================================================
-                       7. HAFTALIK GÜNCELLEME
+                         7. VERİ YAPILARI
 ================================================================================
 
-7.1 OTOMATİK GÜNCELLEME (Selenium ile)
---------------------------------------
-
-Gereksinimler:
-  pip install selenium webdriver-manager
-
-Kullanım:
-  python update_weekly.py
-
-Script şunları yapar:
-  1. Chrome driver'ı başlatır (headless mod)
-  2. Google'dan güncel verileri çeker
-  3. web/app.js dosyasını otomatik günceller
-  4. Değişiklikleri GitHub'a push eder
-  5. Her adımı logs/ klasörüne kaydeder
-
-7.2 MANUEL GÜNCELLEME
----------------------
-
-Adım 1: Verileri Topla
-  - Google'da "süper lig puan durumu" ara
-  - Google'da "süper lig gol krallığı" ara
-  - Google'da "süper lig 19. hafta maçları" ara
-
-Adım 2: web/app.js Dosyasını Aç
-
-Adım 3: Veri Dizilerini Güncelle
-  - REAL_STANDINGS: Puan durumu
-  - TOP_SCORERS: Gol krallığı
-  - TOP_ASSISTS: Asist krallığı
-  - YELLOW_CARDS: Sarı kartlar
-  - RED_CARDS: Kırmızı kartlar
-  - FIXTURES: Fikstür
-
-Adım 4: Script'i Çalıştır
-  python update_weekly.py
-
-7.3 LOG DOSYALARI
------------------
-Her güncelleme için log dosyası oluşturulur:
-  logs/update_20260116_235000.log
-
-Log içeriği:
-  - Başlangıç zamanı
-  - Her adımın durumu (başarı/hata)
-  - Çekilen veri sayısı
-  - Git işlemleri
-  - Hata mesajları
-
-================================================================================
-                         8. VERİ YAPILARI
-================================================================================
-
-8.1 PUAN DURUMU (REAL_STANDINGS)
+7.1 PUAN DURUMU (REAL_STANDINGS)
 --------------------------------
 
 {
@@ -304,21 +254,18 @@ Log içeriği:
     form: ["G","B","G","G","G"] // Son 5 maç
 }
 
-Form değerleri:
-  G = Galibiyet (Yeşil)
-  B = Beraberlik (Gri)
-  M = Mağlubiyet (Kırmızı)
-
-8.2 İSTATİSTİKLER
+7.2 İSTATİSTİKLER
 -----------------
 
 {
-    name: "Eldar Şahmuradov",   // Oyuncu adı
+    name: "Eldor Shomurodov",   // Oyuncu adı
     team: "Başakşehir",         // Takım
     count: 12                   // Gol/Asist/Kart sayısı
 }
 
-8.3 FİKSTÜR
+Rating için count ondalıklı sayıdır (örn: 7.91)
+
+7.3 FİKSTÜR
 -----------
 
 {
@@ -329,20 +276,19 @@ Form değerleri:
 }
 
 ================================================================================
-                       9. AI TAHMİN SİSTEMİ
+                       8. AI TAHMİN SİSTEMİ
 ================================================================================
 
 AI tahmini şu faktörlere dayanır:
 
-9.1 PUAN BAŞINA MAÇ (PPG)
+8.1 PUAN BAŞINA MAÇ (PPG)
 -------------------------
 Her takımın maç başına aldığı ortalama puan.
   PPG = Toplam Puan / Oynanan Maç
 
-9.2 FORM SKORU
+8.2 FORM SKORU
 --------------
 Son 5 maçın ağırlıklı skoru.
-Yakın maçlar daha fazla ağırlık alır.
 
   Ağırlıklar: [1.0, 1.2, 1.4, 1.6, 2.0]
   
@@ -350,115 +296,31 @@ Yakın maçlar daha fazla ağırlık alır.
   Beraberlik = 1 puan × ağırlık
   Mağlubiyet = 0 puan
 
-9.3 AVERAJ FAKTÖRÜ
-------------------
-Maç başına averaj.
-  GD = (Atılan - Yenilen) / Oynanan Maç
-
-9.4 EV SAHİBİ AVANTAJI
+8.3 EV SAHİBİ AVANTAJI
 ----------------------
 Ev sahibi takıma %15 bonus.
-  Ev Avantajı = 1.15
 
-9.5 TAHMİN FORMÜLÜ
+8.4 TAHMİN FORMÜLÜ
 ------------------
 
-Ev Gücü = (PPG × 10 + Form Skoru + GD) × 1.15
-Deplasman Gücü = PPG × 10 + Form Skoru + GD
+Ev Gücü = (PPG × 10 + Form Skoru + Averaj) × 1.15
+Deplasman Gücü = PPG × 10 + Form Skoru + Averaj
 
 Fark = Ev Gücü - Deplasman Gücü
 
 Tahmin:
   Fark > 4    → Ev sahibi kazanır (%60-85 güven)
   Fark < -4   → Deplasman kazanır (%60-85 güven)
-  Fark > 1.5  → Ev sahibi favori (%50-65 güven)
-  Fark < -1.5 → Deplasman favori (%50-65 güven)
   Diğer       → Beraberlik (%45 güven)
-
-================================================================================
-                    10. GITHUB PAGES DEPLOYMENT
-================================================================================
-
-10.1 OTOMATİK DEPLOYMENT
-------------------------
-.github/workflows/deploy.yml dosyası otomatik deployment sağlar.
-
-Tetiklenme:
-  - main branch'e push yapıldığında
-  - Manuel tetikleme (workflow_dispatch)
-
-Adımlar:
-  1. Kodu checkout et
-  2. GitHub Pages'i yapılandır
-  3. web/ klasörünü yükle
-  4. Deploy et
-
-10.2 MANUEL DEPLOYMENT
-----------------------
-1. GitHub repo ayarlarına git
-2. Pages > Source: GitHub Actions seç
-3. Değişiklikleri push et
-
-================================================================================
-                        11. SORUN GİDERME
-================================================================================
-
-SORUN: Selenium çalışmıyor
-ÇÖZÜM: 
-  pip install selenium webdriver-manager
-  Chrome tarayıcısının yüklü olduğundan emin olun
-
-SORUN: Git push hatası
-ÇÖZÜM:
-  git config --global user.email "email@example.com"
-  git config --global user.name "Your Name"
-
-SORUN: Website güncellenmiyor
-ÇÖZÜM:
-  1. GitHub Actions sayfasını kontrol edin
-  2. Workflow'un başarılı olduğunu doğrulayın
-  3. Birkaç dakika bekleyin (cache temizlenmesi gerekebilir)
-
-SORUN: Veriler yanlış görünüyor
-ÇÖZÜM:
-  1. web/app.js dosyasını kontrol edin
-  2. JSON formatının doğru olduğunu kontrol edin
-  3. Tarayıcı konsolunu hatalara karşı kontrol edin
-
-================================================================================
-                          12. GELİŞTİRME
-================================================================================
-
-12.1 YENİ ÖZELLİK EKLEME
-------------------------
-1. web/app.js'de gerekli fonksiyonları ekleyin
-2. web/style.css'de stilleri tanımlayın
-3. web/index.html'de HTML yapısını oluşturun
-4. Test edin ve push edin
-
-12.2 VERİ KAYNAĞI DEĞİŞTİRME
-----------------------------
-Farklı bir veri kaynağı kullanmak için:
-1. scraper/google_scraper.py'yi düzenleyin
-2. Yeni API/website için selector'ları güncelleyin
-3. update_weekly.py'deki SuperLigScraper sınıfını güncelleyin
-
-12.3 TEMA DEĞİŞTİRME
---------------------
-web/style.css dosyasındaki CSS variables'ları düzenleyin:
-  --primary: #6366f1
-  --secondary: #8b5cf6
-  --bg-primary: #0f172a
-  --text-primary: #f1f5f9
 
 ================================================================================
                               SON
 ================================================================================
 
-Bu dokümantasyon Süper Lig 360 projesinin tüm özelliklerini ve kullanımını
-kapsamaktadır. Sorularınız için GitHub Issues kullanabilirsiniz.
+Bu dokümantasyon Süper Lig 360 projesinin tüm özelliklerini kapsamaktadır.
 
 GitHub: https://github.com/KAAN482/Superlig360
 Website: https://kaan482.github.io/Superlig360/
+Veri Kaynağı: https://www.fotmob.com
 
 ================================================================================
