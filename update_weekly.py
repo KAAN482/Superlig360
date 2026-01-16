@@ -498,6 +498,14 @@ class AppJSGuncelleyici:
         satirlar.append("];")
         return '\n'.join(satirlar)
     
+    def fikstur_js_olustur(self):
+        """Fikstür JavaScript kodu"""
+        satirlar = ["const FIXTURES = ["]
+        for mac in self.veri.get('fikstur', []):
+            satirlar.append(f'    {{ home: "{mac["ev_sahibi"]}", away: "{mac["deplasman"]}", date: "{mac["tarih"]}", time: "{mac["saat"]}" }},')
+        satirlar.append("];")
+        return '\n'.join(satirlar)
+
     def dosya_guncelle(self):
         """app.js dosyasını güncelle"""
         log("web/app.js güncelleniyor...", "STEP")
@@ -533,6 +541,14 @@ class AppJSGuncelleyici:
                     icerik = re.sub(pattern, yeni, icerik)
                     log(f"   {js_degisken} güncellendi", "SUCCESS")
                     guncellendi = True
+
+            # Fikstür
+            if self.veri.get('fikstur') and len(self.veri['fikstur']) > 0:
+                yeni = self.fikstur_js_olustur()
+                # Mevcut FIXTURES bloğunu bul ve değiştir
+                icerik = re.sub(r'const FIXTURES = \[[\s\S]*?\];', yeni, icerik)
+                log("   Fikstür güncellendi", "SUCCESS")
+                guncellendi = True
             
             if guncellendi:
                 with open(self.app_js_yolu, 'w', encoding='utf-8') as f:

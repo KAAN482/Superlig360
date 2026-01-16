@@ -85,15 +85,15 @@ const RED_CARDS = [
 
 // Week 18 Fixtures from Google
 const FIXTURES = [
-    { home: "Başakşehir", away: "Karagümrük", date: "17 Ocak Cmt", time: "17:00" },
-    { home: "Galatasaray", away: "Gaziantep FK", date: "17 Ocak Cmt", time: "20:00" },
-    { home: "Kasımpaşa", away: "Antalyaspor", date: "18 Ocak Paz", time: "14:30" },
-    { home: "Kocaelispor", away: "Trabzonspor", date: "18 Ocak Paz", time: "17:00" },
-    { home: "Gençlerbirliği", away: "Samsunspor", date: "18 Ocak Paz", time: "17:00" },
-    { home: "Alanyaspor", away: "Fenerbahçe", date: "18 Ocak Paz", time: "20:00" },
-    { home: "Konyaspor", away: "Eyüpspor", date: "19 Ocak Pzt", time: "17:00" },
-    { home: "Beşiktaş", away: "Kayserispor", date: "19 Ocak Pzt", time: "20:00" },
-    { home: "Göztepe", away: "Rizespor", date: "19 Ocak Pzt", time: "20:00" }
+    { home: "Başakşehir", away: "Fatih Karagümrük", date: "Yakında", time: "17:00" },
+    { home: "Galatasaray", away: "Gaziantep FK", date: "Yakında", time: "20:00" },
+    { home: "Kasımpaşa", away: "Antalyaspor", date: "Yakında", time: "14:30" },
+    { home: "Gençlerbirliği", away: "Samsunspor", date: "Yakında", time: "17:00" },
+    { home: "Kocaelispor", away: "Trabzonspor", date: "Yakında", time: "17:00" },
+    { home: "Alanyaspor", away: "Fenerbahçe", date: "Yakında", time: "20:00" },
+    { home: "Konyaspor", away: "Eyüpspor", date: "Yakında", time: "17:00" },
+    { home: "Beşiktaş", away: "Kayserispor", date: "Yakında", time: "20:00" },
+    { home: "Göztepe", away: "Rizespor", date: "Yakında", time: "20:00" },
 ];
 
 // Get team data by name
