@@ -1,1 +1,2 @@
-dbt-postgres
+selenium>=4.0.0
+webdriver-manager>=4.0.0
