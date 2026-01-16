@@ -20,70 +20,67 @@ const REAL_STANDINGS = [
     { rank: 18, team_name: "Karagümrük", played: 17, wins: 2, draws: 3, losses: 12, goals_for: 14, goals_against: 32, goal_diff: -18, points: 9, form: ["B", "M", "M", "B", "M"] }
 ];
 
-// Gol Krallığı (FotMob)
+// Gol Krallığı (FotMob 2025/2026)
 const TOP_SCORERS = [
-    { name: "Eldar Şahmuradov", team: "Başakşehir", count: 12 },
+    { name: "Eldor Shomurodov", team: "Başakşehir", count: 12 },
     { name: "Paul Onuachu", team: "Trabzonspor", count: 11 },
     { name: "Mauro Icardi", team: "Galatasaray", count: 9 },
-    { name: "Talisca", team: "Fenerbahçe", count: 9 },
-    { name: "Felipe Augusto", team: "Trabzonspor", count: 8 },
-    { name: "Marco Asensio", team: "Fenerbahçe", count: 8 },
-    { name: "Umut Nayir", team: "Konyaspor", count: 8 }
+    { name: "Anderson Talisca", team: "Fenerbahçe", count: 9 },
+    { name: "Felipe Augusto", team: "Trabzonspor", count: 8 }
 ];
 
-// Asist Krallığı (FotMob)
+// Asist Krallığı (FotMob 2025/2026)
 const TOP_ASSISTS = [
     { name: "Barış Alper Yılmaz", team: "Galatasaray", count: 7 },
-    { name: "Göktan Gürpüz", team: "Gençlerbirliği", count: 6 },
     { name: "Yunus Akgün", team: "Galatasaray", count: 6 },
-    { name: "Alexandru Maxim", team: "Gaziantep FK", count: 5 },
-    { name: "Miguel Crespo", team: "Başakşehir", count: 5 },
-    { name: "Václav Černý", team: "Beşiktaş", count: 5 }
+    { name: "Alexandru Maxim", team: "Gaziantep FK", count: 6 },
+    { name: "Václav Cerny", team: "Samsunspor", count: 6 },
+    { name: "Göktan Gürpüz", team: "Trabzonspor", count: 5 }
 ];
 
-// En İyi FotMob Rating
+// En İyi FotMob Rating (2025/2026)
 const TOP_RATING = [
-    { name: "Fernando Muslera", team: "Galatasaray", count: 7.42 },
-    { name: "Mert Günok", team: "Fenerbahçe", count: 7.38 },
-    { name: "Rade Krunić", team: "Fenerbahçe", count: 7.35 },
-    { name: "Davinson Sánchez", team: "Galatasaray", count: 7.32 },
-    { name: "Gabriel Sara", team: "Galatasaray", count: 7.28 }
+    { name: "Marco Asensio", team: "Fenerbahçe", count: 7.91 },
+    { name: "Leroy Sané", team: "Galatasaray", count: 7.70 },
+    { name: "Mateusz Lis", team: "Göztepe", count: 7.66 },
+    { name: "Christ Inao Oulai", team: "Trabzonspor", count: 7.59 },
+    { name: "Barış Alper Yılmaz", team: "Galatasaray", count: 7.57 }
 ];
 
-// Kaçırılan Büyük Fırsatlar (FotMob)
+// Kaçırılan Büyük Fırsatlar (FotMob 2025/2026)
 const MISSED_CHANCES = [
-    { name: "Mauro Icardi", team: "Galatasaray", count: 8 },
-    { name: "Paul Onuachu", team: "Trabzonspor", count: 7 },
-    { name: "Edin Džeko", team: "Fenerbahçe", count: 6 },
-    { name: "Michy Batshuayi", team: "Galatasaray", count: 5 },
-    { name: "Vincent Janssen", team: "Beşiktaş", count: 5 }
+    { name: "Paul Onuachu", team: "Trabzonspor", count: 10 },
+    { name: "Tammy Abraham", team: "Beşiktaş", count: 10 },
+    { name: "Victor Osimhen", team: "Galatasaray", count: 9 },
+    { name: "Ali Sowe", team: "Göztepe", count: 9 },
+    { name: "Janderson", team: "Gaziantep FK", count: 9 }
 ];
 
-// Gol Yemeden Bitirilen Maçlar (FotMob)
+// Kalesini Gole Kapatanlar (FotMob 2025/2026)
 const CLEAN_SHEETS = [
-    { name: "Fernando Muslera", team: "Galatasaray", count: 9 },
-    { name: "Mert Günok", team: "Fenerbahçe", count: 8 },
+    { name: "Mateusz Lis", team: "Göztepe", count: 11 },
+    { name: "Ertuğrul Taşkıran", team: "Alanyaspor", count: 7 },
     { name: "Uğurcan Çakır", team: "Trabzonspor", count: 6 },
-    { name: "İrfan Can Eğribayat", team: "Göztepe", count: 6 },
-    { name: "Mert Günok", team: "Beşiktaş", count: 5 }
+    { name: "Aleksandar Jovanovic", team: "Kocaelispor", count: 6 },
+    { name: "Ederson", team: "Fenerbahçe", count: 5 }
 ];
 
-// Sarı Kartlar (FotMob)
+// Sarı Kartlar (FotMob 2025/2026)
 const YELLOW_CARDS = [
     { name: "Emirhan Topçu", team: "Beşiktaş", count: 7 },
+    { name: "Kevin Rodrigues", team: "Kasımpaşa", count: 6 },
     { name: "Arda Kızıldağ", team: "Gaziantep FK", count: 6 },
-    { name: "Kévin Rodrigues", team: "Gaziantep FK", count: 6 },
-    { name: "Samet Akaydın", team: "Rizespor", count: 6 },
-    { name: "Show", team: "Kocaelispor", count: 6 }
+    { name: "Samet Akaydın", team: "Fenerbahçe", count: 6 },
+    { name: "Show", team: "Çaykur Rizespor", count: 6 }
 ];
 
-// Kırmızı Kartlar (FotMob)
+// Kırmızı Kartlar (FotMob 2025/2026)
 const RED_CARDS = [
-    { name: "Orkun Kökçü", team: "Beşiktaş", count: 2 },
-    { name: "Thalisson Kelven", team: "Gençlerbirliği", count: 2 },
-    { name: "Cafú", team: "Kasımpaşa", count: 1 },
-    { name: "Davinson Sánchez", team: "Galatasaray", count: 1 },
-    { name: "Enis Bardhi", team: "Konyaspor", count: 1 }
+    { name: "Orkun Kökcü", team: "Galatasaray", count: 2 },
+    { name: "Thalisson", team: "Antalyaspor", count: 2 },
+    { name: "Kevin Rodrigues", team: "Kasımpaşa", count: 1 },
+    { name: "Davinson Sanchez", team: "Galatasaray", count: 1 },
+    { name: "Jayden Oosterwolde", team: "Fenerbahçe", count: 1 }
 ];
 
 // Week 18 Fixtures from Google
