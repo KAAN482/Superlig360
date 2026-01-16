@@ -176,32 +176,83 @@ class FotMobScraper:
         log(f"{turkce_adi} verileri çekiliyor...", "STEP")
         
         try:
-            # Stats sayfasına git
-            url = f"{FOTMOB_URLS['stats']}"
-            if kategori != 'goals':
-                self.driver.get(url)
-                time.sleep(2)
+            # Stats sayfasına git (ilk kez gidiyorsa)
+            current_url = self.driver.current_url
+            if 'stats' not in current_url:
+                self.driver.get(FOTMOB_URLS['stats'])
+                time.sleep(3)
             
+            # "See all" veya "Show all" butonunu bul ve tıkla
+            try:
+                # Farklı olası selektorlar
+                see_all_selectors = [
+                    "button:contains('See all')",
+                    "button:contains('Show all')",
+                    "a:contains('See all')",
+                    "[data-testid='see-all']",
+                    ".see-all-button",
+                    "button[class*='see']",
+                    "button[class*='show']"
+                ]
+                
+                for selector in see_all_selectors:
+                    try:
+                        # Tüm "See all" butonlarını bul
+                        buttons = self.driver.find_elements(By.CSS_SELECTOR, "button, a")
+                        for button in buttons:
+                            if any(text in button.text.lower() for text in ['see all', 'show all', 'tümünü gör']):
+                                try:
+                                    self.driver.execute_script("arguments[0].scrollIntoView(true);", button)
+                                    time.sleep(0.5)
+                                    button.click()
+                                    time.sleep(2)
+                                    log(f"   'See all' butonuna tıklandı", "SUCCESS")
+                                    break
+                                except:
+                                    continue
+                        break
+                    except:
+                        continue
+            except:
+                pass
+            
+            # Sayfa kaynağından oyuncu verilerini çıkar
             page_source = self.driver.page_source
             
-            # Oyuncu verilerini regex ile çıkar
-            player_pattern = r'"name":"([^"]+)".*?"teamName":"([^"]+)".*?"' + fotmob_adi + r'["\s:]+(\d+)'
-            matches = re.findall(player_pattern, page_source)
-            
+            # JSON datayı bul
             istatistikler = []
-            for match in matches[:7]:
-                istatistikler.append({
-                    'oyuncu': match[0],
-                    'takim': match[1],
-                    'sayi': int(match[2])
-                })
+            
+            # Farklı regex patternleri dene
+            patterns = [
+                r'"name":"([^"]+)"[^}]*?"teamName":"([^"]+)"[^}]*?"' + fotmob_adi + r'"[:\s]+(\d+\.?\d*)',
+                r'"participantName":"([^"]+)"[^}]*?"teamName":"([^"]+)"[^}]*?"' + fotmob_adi + r'"[:\s]+(\d+\.?\d*)',
+                r'{"name":"([^"]+)"[^}]*?"team[^"]*?":"([^"]+)"[^}]*?"' + fotmob_adi + r'"[:\s]+(\d+\.?\d*)'
+            ]
+            
+            for pattern in patterns:
+                matches = re.findall(pattern, page_source)
+                if matches and len(matches) >= 3:
+                    # İlk 5'i al
+                    for match in matches[:5]:
+                        try:
+                            sayi = float(match[2]) if '.' in match[2] else int(match[2])
+                            istatistikler.append({
+                                'oyuncu': match[0],
+                                'takim': match[1],
+                                'sayi': sayi
+                            })
+                            log(f"   {match[0]} - {sayi}", "INFO")
+                        except:
+                            continue
+                    break
             
             if istatistikler:
                 self.veri[kategori] = istatistikler
                 log(f"{len(istatistikler)} {turkce_adi} verisi alındı", "SUCCESS")
                 return True
-            
-            return False
+            else:
+                log(f"{turkce_adi} verisi alınamadı", "WARNING")
+                return False
             
         except Exception as e:
             log(f"{turkce_adi} hatası: {e}", "ERROR")
