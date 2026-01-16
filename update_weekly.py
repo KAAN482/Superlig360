@@ -125,12 +125,15 @@ class FotMobScraper:
         log("Chrome driver başlatılıyor...", "STEP")
         
         options = Options()
+        # Headless mod bazen sorun çıkarabilir, gerekirse '--headless=new' kaldırılabilir
         options.add_argument('--headless=new')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--disable-gpu')
         options.add_argument('--window-size=1920,1080')
         options.add_argument('--lang=tr-TR')
+        
+        # Anti-detection
         options.add_argument('--disable-blink-features=AutomationControlled')
         options.add_experimental_option('excludeSwitches', ['enable-automation'])
         options.add_experimental_option('useAutomationExtension', False)
@@ -139,7 +142,10 @@ class FotMobScraper:
         try:
             service = Service(ChromeDriverManager().install())
             self.driver = webdriver.Chrome(service=service, options=options)
+            
+            # Stealth script
             self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            
             log("Chrome driver hazır", "SUCCESS")
             return True
         except Exception as e:
@@ -156,8 +162,19 @@ class FotMobScraper:
         
         try:
             self.driver.get(FOTMOB_URLS['tablo'])
-            time.sleep(3)
             
+            # Elementin yüklenmesini bekle (Maksimum 20 saniye)
+            try:
+                WebDriverWait(self.driver, 20).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/teams/']"))
+                )
+                time.sleep(2) # Rendering için ek süre
+            except TimeoutException:
+                log("   Sayfa yüklenirken zaman aşımı oluştu!", "ERROR")
+                # Hata ayıklama için sayfa başlığını yazdır
+                log(f"   Sayfa Başlığı: {self.driver.title}", "INFO")
+                return False
+
             # JavaScript ile veri çek
             script = """
             return Array.from(document.querySelectorAll('a[href*="/teams/"]')).map(a => {
@@ -168,7 +185,9 @@ class FotMobScraper:
                 if (row) {
                     stats = Array.from(row.querySelectorAll('td, span')).map(el => el.innerText.trim());
                 }
-                if (match && name && !name.includes('\\n') && name.length > 1) {
+                
+                // İsim kontrolü ve veri temizleme
+                if (match && name && !name.includes('\\n') && name.length > 2) {
                     return { id: match[1], name: name, stats: stats };
                 }
                 return null;
@@ -177,6 +196,10 @@ class FotMobScraper:
             
             takimlar = self.driver.execute_script(script)
             
+            if not takimlar:
+                log("   Tablo verisi bulunamadı (Selector uyumsuz)", "WARNING")
+                return False
+
             puan_durumu = []
             sira = 1
             goruldu = set()
@@ -184,29 +207,44 @@ class FotMobScraper:
             for takim in takimlar:
                 if takim['name'] in goruldu:
                     continue
+                
+                # Gereksiz metinleri atla (örn: "CL", "EL")
+                if len(takim['name']) < 3: 
+                    continue
+                    
                 goruldu.add(takim['name'])
                 
                 # Stats dizisinden verileri çıkar
                 stats = takim.get('stats', [])
                 sayilar = [int(s) for s in stats if s.isdigit()]
                 
-                if len(sayilar) >= 7:
-                    puan_durumu.append({
-                        'sira': sira,
-                        'takim_adi': takim['name'],
-                        'oynanan': sayilar[0],
-                        'galibiyet': sayilar[1],
-                        'beraberlik': sayilar[2],
-                        'maglubiyet': sayilar[3],
-                        'atilan_gol': sayilar[4] if len(sayilar) > 4 else 0,
-                        'yenilen_gol': sayilar[5] if len(sayilar) > 5 else 0,
-                        'averaj': sayilar[4] - sayilar[5] if len(sayilar) > 5 else 0,
-                        'puan': sayilar[-1],
-                        'form': ["G", "G", "G", "G", "G"]
-                    })
-                    log(f"   {sira}. {takim['name']} - {sayilar[-1]} puan")
-                    sira += 1
+                # Veri doğrulama: En az Oynanan(1), Puan(1) vb. olmalı.
+                # FotMob tablo yapısında genellikle çok fazla sayı döner.
+                # Sırayla: O, G, B, M, AG, YG, Av, Puan
+                
+                if len(sayilar) >= 8:
+                    # En sağdaki puan, genelde. Ama yapıya göre değişebilir.
+                    # FotMob masaüstü web: #, Takım, O, G, B, M, AG, YG, Av, P
                     
+                    try:
+                        puan_durumu.append({
+                            'sira': sira,
+                            'takim_adi': takim['name'],
+                            'oynanan': sayilar[0],
+                            'galibiyet': sayilar[1],
+                            'beraberlik': sayilar[2],
+                            'maglubiyet': sayilar[3],
+                            'atilan_gol': sayilar[4],
+                            'yenilen_gol': sayilar[5],
+                            'averaj': int(sayilar[4]) - int(sayilar[5]),
+                            'puan': sayilar[-1], # Son sayı puandır
+                            'form': ["G", "G", "G", "G", "G"]
+                        })
+                        log(f"   {sira}. {takim['name']} - {sayilar[-1]} puan")
+                        sira += 1
+                    except IndexError:
+                        continue
+                        
                     if sira > 18:
                         break
             
@@ -215,7 +253,7 @@ class FotMobScraper:
                 log(f"{len(puan_durumu)} takım verisi alındı", "SUCCESS")
                 return True
             else:
-                log("Puan durumu verisi alınamadı", "WARNING")
+                log("Puan durumu verisi parse edilemedi", "WARNING")
                 return False
             
         except Exception as e:
@@ -228,14 +266,28 @@ class FotMobScraper:
         
         try:
             self.driver.get(FOTMOB_URLS[url_anahtar])
-            time.sleep(3)
+            
+            # Elementin yüklenmesini bekle
+            try:
+                # Oyuncu linklerinin yüklenmesini bekle
+                WebDriverWait(self.driver, 20).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/players/']"))
+                )
+                time.sleep(2) # Ekstra bekleme
+            except TimeoutException:
+                log(f"   {turkce_adi} sayfası yüklenemedi (Zaman aşımı)", "ERROR")
+                return False
             
             # JavaScript ile oyuncu verilerini çek
+            # Daha esnek selector'lar
             script = """
             return Array.from(document.querySelectorAll('a[href*="/players/"]')).slice(0, 20).map(a => {
-                const name = a.querySelector('[class*="PlayerName"], [class*="TeamOrPlayerName"]');
-                const stat = a.closest('div').querySelector('[class*="StatValue"], [class*="stat"]');
-                const teamImg = a.closest('div').querySelector('img[src*="teamlogo"]');
+                const row = a.closest('tr') || a.closest('div[class*="row"]') || a.closest('div[class*="Row"]');
+                if (!row) return null;
+                
+                const name = row.querySelector('[class*="PlayerName"], [class*="TeamOrPlayerName"]') || a;
+                const stat = row.querySelector('[class*="StatValue"], [class*="stat"], [class*="Stat"]');
+                const teamImg = row.querySelector('img[src*="teamlogo"]');
                 
                 let teamId = null;
                 if (teamImg) {
@@ -248,11 +300,15 @@ class FotMobScraper:
                     stat: stat ? stat.innerText.trim() : null,
                     teamId: teamId
                 };
-            }).filter(p => p.name && p.stat);
+            }).filter(p => p && p.name && p.stat);
             """
             
             oyuncular = self.driver.execute_script(script)
             
+            if not oyuncular:
+                log(f"   {turkce_adi} tablosu bulunamadı", "WARNING")
+                return False
+
             istatistikler = []
             goruldu = set()
             
@@ -265,7 +321,7 @@ class FotMobScraper:
                 try:
                     stat_str = oyuncu['stat'].replace(',', '.')
                     sayi = float(stat_str) if '.' in stat_str else int(stat_str)
-                except:
+                except ValueError:
                     continue
                 
                 # Takım adını bul
@@ -283,7 +339,7 @@ class FotMobScraper:
                 log(f"{len(istatistikler)} {turkce_adi} verisi alındı", "SUCCESS")
                 return True
             else:
-                log(f"{turkce_adi} verisi alınamadı", "WARNING")
+                log(f"{turkce_adi} verisi alınamadı (Parse hatası)", "WARNING")
                 return False
             
         except Exception as e:
@@ -296,7 +352,16 @@ class FotMobScraper:
         
         try:
             self.driver.get(FOTMOB_URLS['fikstur'])
-            time.sleep(3)
+            
+            # Elementin yüklenmesini bekle
+            try:
+                WebDriverWait(self.driver, 20).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/matches/']"))
+                )
+                time.sleep(2)
+            except TimeoutException:
+                log("   Fikstür sayfası yüklenemedi (Zaman aşımı)", "ERROR")
+                return False
             
             script = """
             return Array.from(document.querySelectorAll('a[href*="/matches/"]')).slice(0, 9).map(a => {
