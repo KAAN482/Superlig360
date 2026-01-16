@@ -1,0 +1,13 @@
+
+version: 2
+
+sources:
+  - name: raw_superlig
+    database: superlig360
+    schema: public
+    tables:
+      - name: dim_players
+      - name: dim_teams
+      - name: fact_matches
+      - name: fact_player_stats
+      - name: fact_market_values
