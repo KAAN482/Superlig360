@@ -237,16 +237,20 @@ function loadStats() {
     renderStatsGrid(RED_CARDS, 'red-grid', 'Kırmızı Kart');
 }
 
-// Background gradients for each tab
+// Background images for each tab (from Unsplash - free to use)
 const TAB_BACKGROUNDS = {
-    standings: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #312e81 100%)',
-    stats: 'linear-gradient(135deg, #0f172a 0%, #134e4a 50%, #064e3b 100%)',
-    fixtures: 'linear-gradient(135deg, #0f172a 0%, #3b0764 50%, #581c87 100%)'
+    standings: 'linear-gradient(rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.9)), url("https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=1920&q=80")',
+    stats: 'linear-gradient(rgba(15, 23, 42, 0.85), rgba(6, 78, 59, 0.9)), url("https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1920&q=80")',
+    fixtures: 'linear-gradient(rgba(15, 23, 42, 0.85), rgba(88, 28, 135, 0.9)), url("https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1920&q=80")'
 };
 
 // Change background based on tab
 function changeBackground(tabName) {
-    document.body.style.background = TAB_BACKGROUNDS[tabName] || TAB_BACKGROUNDS.standings;
+    const bg = TAB_BACKGROUNDS[tabName] || TAB_BACKGROUNDS.standings;
+    document.body.style.background = bg;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundAttachment = 'fixed';
 }
 
 // Tab switching for main tabs
