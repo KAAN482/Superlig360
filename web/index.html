@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Süper Lig 360</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">
+                    <span class="logo-icon">⚽</span>
+                    Süper Lig 360
+                </h1>
+            </div>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                Canlı Veri
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="standings">
+                <span class="tab-icon">🏆</span>
+                Puan Durumu
+            </button>
+            <button class="tab-btn" data-tab="stats">
+                <span class="tab-icon">📊</span>
+                İstatistikler
+            </button>
+            <button class="tab-btn" data-tab="fixtures">
+                <span class="tab-icon">📅</span>
+                Fikstür
+            </button>
+        </div>
+
+        <div class="content">
+            <!-- Puan Durumu -->
+            <div id="standings" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Süper Lig Puan Durumu</h2>
+                        <div class="refresh-btn" onclick="loadStandings()">
+                            <span>🔄</span> Yenile
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="standings-table">
+                            <thead>
+                                <tr>
+                                    <th>Sıra</th>
+                                    <th>Takım</th>
+                                    <th>O</th>
+                                    <th>G</th>
+                                    <th>B</th>
+                                    <th>M</th>
+                                    <th>A</th>
+                                    <th>Y</th>
+                                    <th>AV</th>
+                                    <th>P</th>
+                                    <th>Son 5</th>
+                                </tr>
+                            </thead>
+                            <tbody id="standings-body">
+                                <tr class="loading-row">
+                                    <td colspan="11">
+                                        <div class="loader"></div>
+                                        Veri yükleniyor...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Zone Legend -->
+                    <div class="zone-legend">
+                        <div class="legend-item">
+                            <span class="legend-color ucl"></span>
+                            <span class="legend-text">UEFA Şampiyonlar Ligi grup aşaması</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color uel"></span>
+                            <span class="legend-text">Avrupa Ligi eleme turu</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color uecl"></span>
+                            <span class="legend-text">Avrupa Konferans Ligi eleme turu</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color relegation"></span>
+                            <span class="legend-text">Küme düşme</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- İstatistikler -->
+            <div id="stats" class="tab-content">
+                <div class="stats-tabs">
+                    <button class="stats-tab-btn active" data-stat="goals">⚽ Goller</button>
+                    <button class="stats-tab-btn" data-stat="assists">🅰️ Asistler</button>
+                    <button class="stats-tab-btn" data-stat="yellow">🟡 Sarı Kartlar</button>
+                    <button class="stats-tab-btn" data-stat="red">🔴 Kırmızı Kartlar</button>
+                </div>
+
+                <!-- Goller -->
+                <div id="goals" class="stats-content active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Gol Krallığı</h2>
+                        </div>
+                        <div class="stats-grid" id="goals-grid"></div>
+                    </div>
+                </div>
+
+                <!-- Asistler -->
+                <div id="assists" class="stats-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Asist Krallığı</h2>
+                        </div>
+                        <div class="stats-grid" id="assists-grid"></div>
+                    </div>
+                </div>
+
+                <!-- Sarı Kartlar -->
+                <div id="yellow" class="stats-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Sarı Kart Sıralaması</h2>
+                        </div>
+                        <div class="stats-grid" id="yellow-grid"></div>
+                    </div>
+                </div>
+
+                <!-- Kırmızı Kartlar -->
+                <div id="red" class="stats-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Kırmızı Kart Sıralaması</h2>
+                        </div>
+                        <div class="stats-grid" id="red-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fikstür -->
+            <div id="fixtures" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>18. Hafta Maçları</h2>
+                        <div class="ai-badge">🤖 AI Destekli Tahminler</div>
+                    </div>
+                    <div class="fixtures-grid" id="fixtures-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2025 Süper Lig 360</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
