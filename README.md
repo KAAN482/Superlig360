@@ -42,7 +42,7 @@
 
 ### Kurulum
 ```bash
-pip install selenium webdriver-manager
+pip install -r requirements.txt
 ```
 
 ### Kullanım

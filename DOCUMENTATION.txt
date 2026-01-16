@@ -136,7 +136,7 @@ git clone https://github.com/KAAN482/Superlig360.git
 cd Superlig360
 
 # Selenium ve webdriver-manager yükle
-pip install selenium webdriver-manager
+pip install -r requirements.txt
 
 5.3 DOĞRULAMA
 -------------
