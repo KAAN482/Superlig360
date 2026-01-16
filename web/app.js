@@ -237,6 +237,18 @@ function loadStats() {
     renderStatsGrid(RED_CARDS, 'red-grid', 'Kırmızı Kart');
 }
 
+// Background gradients for each tab
+const TAB_BACKGROUNDS = {
+    standings: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #312e81 100%)',
+    stats: 'linear-gradient(135deg, #0f172a 0%, #134e4a 50%, #064e3b 100%)',
+    fixtures: 'linear-gradient(135deg, #0f172a 0%, #3b0764 50%, #581c87 100%)'
+};
+
+// Change background based on tab
+function changeBackground(tabName) {
+    document.body.style.background = TAB_BACKGROUNDS[tabName] || TAB_BACKGROUNDS.standings;
+}
+
 // Tab switching for main tabs
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -244,6 +256,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById(btn.dataset.tab).classList.add('active');
+        changeBackground(btn.dataset.tab);
     });
 });
 
