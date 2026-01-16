@@ -180,7 +180,7 @@ class FotMobScraper:
             return Array.from(document.querySelectorAll('a[href*="/teams/"]')).map(a => {
                 const match = a.href.match(/\\/teams\\/(\\d+)\\//);
                 const name = a.innerText.trim();
-                const row = a.closest('tr') || a.closest('div[class*="row"]');
+                const row = a.closest('tr') || a.closest('div[class*="row"]') || a.closest('div[class*="Row"]') || a.closest('[role="row"]');
                 let stats = [];
                 if (row) {
                     stats = Array.from(row.querySelectorAll('td, span')).map(el => el.innerText.trim());
@@ -285,7 +285,10 @@ class FotMobScraper:
                 const row = a.closest('tr') || a.closest('div[class*="row"]') || a.closest('div[class*="Row"]');
                 if (!row) return null;
                 
-                const name = row.querySelector('[class*="PlayerName"], [class*="TeamOrPlayerName"]') || a;
+                const nameLink = row.querySelector('a[href*="/players/"]') || a;
+                const nameSpan = row.querySelector('[class*="PlayerName"], [class*="TeamOrPlayerName"]');
+                const name = nameSpan ? nameSpan.innerText.trim() : nameLink.innerText.split('\\n')[0].trim();
+
                 const stat = row.querySelector('[class*="StatValue"], [class*="stat"], [class*="Stat"]');
                 const teamImg = row.querySelector('img[src*="teamlogo"]');
                 
@@ -296,7 +299,7 @@ class FotMobScraper:
                 }
                 
                 return {
-                    name: name ? name.innerText.trim() : a.innerText.split('\\n')[0].trim(),
+                    name: name,
                     stat: stat ? stat.innerText.trim() : null,
                     teamId: teamId
                 };
@@ -365,7 +368,8 @@ class FotMobScraper:
             
             script = """
             return Array.from(document.querySelectorAll('a[href*="/matches/"]')).slice(0, 9).map(a => {
-                const teams = a.querySelectorAll('[class*="team"], [class*="Team"]');
+                // TeamBlockCSS gibi class'ları bul
+                const teams = a.querySelectorAll('span[class*="TeamName"]');
                 const time = a.querySelector('[class*="time"], [class*="Time"]');
                 const date = a.querySelector('[class*="date"], [class*="Date"]');
                 
