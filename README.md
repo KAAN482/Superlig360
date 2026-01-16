@@ -187,35 +187,160 @@ Superlig360/
 
 ## 🚀 Kurulum
 
-### 1. Hızlı Başlangıç (Sadece Website)
+### Ön Gereksinimler
+
+| Gereksinim | Versiyon | Kontrol Komutu |
+|------------|----------|----------------|
+| Python | 3.8+ | `python --version` |
+| pip | Son sürüm | `pip --version` |
+| Git | Son sürüm | `git --version` |
+| Chrome | Son sürüm | Tarayıcı |
+
+---
+
+### 1️⃣ Projeyi İndir
+
 ```bash
-# Klonla
+# GitHub'dan klonla
+git clone https://github.com/KAAN482/Superlig360.git
+
+# Proje klasörüne gir
+cd Superlig360
+```
+
+---
+
+### 2️⃣ Requirements Dosyaları
+
+Projede birden fazla `requirements.txt` dosyası var:
+
+| Dosya | İçerik | Kullanım |
+|-------|--------|----------|
+| `requirements.txt` | Ana bağımlılıklar | `pip install -r requirements.txt` |
+| `web/requirements.txt` | Flask API | Web API için |
+| `dashboard/requirements.txt` | Streamlit | Dashboard için |
+| `scraper/requirements.txt` | Selenium | Scraper için |
+
+**Tüm bağımlılıkları yükle:**
+```bash
+# Ana bağımlılıklar
+pip install -r requirements.txt
+
+# Otomatik güncelleme için (Selenium)
+pip install selenium webdriver-manager
+
+# Dashboard için (opsiyonel)
+pip install -r dashboard/requirements.txt
+
+# Web API için (opsiyonel)
+pip install -r web/requirements.txt
+```
+
+**Tek satırda tümü:**
+```bash
+pip install selenium webdriver-manager streamlit flask psycopg2-binary
+```
+
+---
+
+### 3️⃣ Kullanım Senaryoları
+
+#### A) Sadece Website Görüntüleme
+```bash
+# Tarayıcıda aç (kurulum gerektirmez)
+start web/index.html      # Windows
+open web/index.html       # Mac
+xdg-open web/index.html   # Linux
+```
+
+#### B) Otomatik Veri Güncelleme
+```bash
+# 1. Selenium yükle
+pip install selenium webdriver-manager
+
+# 2. Script'i çalıştır
+python update_weekly.py
+
+# Bu işlem:
+# - Google'dan verileri çeker
+# - web/app.js dosyasını günceller
+# - GitHub'a push eder
+```
+
+#### C) Streamlit Dashboard
+```bash
+# 1. Bağımlılıkları yükle
+pip install -r dashboard/requirements.txt
+
+# 2. Dashboard'u başlat
+streamlit run dashboard/app.py
+
+# Tarayıcıda: http://localhost:8501
+```
+
+#### D) Flask API
+```bash
+# 1. Bağımlılıkları yükle
+pip install -r web/requirements.txt
+
+# 2. API'yi başlat
+python web/api.py
+
+# API: http://localhost:5000
+```
+
+#### E) Full Stack (PostgreSQL + dbt)
+```bash
+# 1. Docker Desktop'ı başlat
+
+# 2. Veritabanını başlat
+docker-compose up -d
+
+# 3. Veritabanı bağlantısını kontrol et
+# Host: localhost, Port: 5432
+# Database: superlig360, User: postgres
+
+# 4. dbt kurulumu
+pip install dbt-postgres
+cd superlig360_dbt
+dbt deps      # Paketleri indir
+dbt run       # Modelleri çalıştır
+dbt test      # Testleri çalıştır
+```
+
+---
+
+### 4️⃣ Doğrulama
+
+Kurulumu doğrula:
+```bash
+# Python sürümü
+python --version
+
+# Selenium yüklü mü?
+python -c "import selenium; print('Selenium OK')"
+
+# Chrome driver test
+python -c "from selenium import webdriver; print('WebDriver OK')"
+```
+
+---
+
+### 5️⃣ Hızlı Başlangıç (TL;DR)
+
+```bash
+# 1. Klonla
 git clone https://github.com/KAAN482/Superlig360.git
 cd Superlig360
 
-# Tarayıcıda aç
-start web/index.html  # Windows
-open web/index.html   # Mac
-```
-
-### 2. Otomatik Güncelleme
-```bash
-# Selenium yükle
+# 2. Selenium yükle
 pip install selenium webdriver-manager
 
-# Güncelle
+# 3. Verileri güncelle
 python update_weekly.py
-```
 
-### 3. Full Stack (Veritabanı dahil)
-```bash
-# Docker başlat
-docker-compose up -d
-
-# dbt kurulumu
-cd superlig360_dbt
-dbt deps
-dbt run
+# 4. Website'i aç
+start web/index.html
 ```
 
 ---
