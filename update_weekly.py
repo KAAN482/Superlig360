@@ -1,239 +1,402 @@
 """
-Süper Lig 360 - Tek Tuşla Haftalık Güncelleme Scripti
-=====================================================
+Süper Lig 360 - Otomatik Veri Güncelleme Scripti
+================================================
 
-Bu script her hafta sonu çalıştırılarak website'i günceller.
+Bu script tek tuşla:
+1. Google'dan güncel verileri çeker (Selenium)
+2. web/app.js dosyasını otomatik günceller
+3. GitHub'a push eder
+4. Her aşamayı loglar
 
-KULLANIM:
-  python update_weekly.py              # Sadece GitHub'a push
-  python update_weekly.py --check      # Durum kontrolü
-  python update_weekly.py --help       # Yardım
+Kullanım:
+  python update_weekly.py
 
-NE YAPAR:
-  1. Mevcut değişiklikleri kontrol eder
-  2. Değişiklik varsa commit oluşturur
-  3. GitHub'a push eder
-  4. GitHub Actions otomatik olarak website'i günceller
-
-HAFTALIK GÜNCELLEME ADIMLARI:
-  1. Google'da 'süper lig puan durumu' ara
-  2. Puan tablosundaki verileri web/app.js'e kopyala
-  3. İstatistikleri güncelle (gol, asist, kartlar)
-  4. Bu scripti çalıştır: python update_weekly.py
+Gereksinimler:
+  pip install selenium webdriver-manager
 """
 
-import subprocess
-import sys
 import os
+import sys
+import re
+import json
+import logging
 from datetime import datetime
+from pathlib import Path
+
+# Selenium imports
+try:
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.chrome.service import Service
+    from selenium.webdriver.chrome.options import Options
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    from webdriver_manager.chrome import ChromeDriverManager
+    SELENIUM_AVAILABLE = True
+except ImportError:
+    SELENIUM_AVAILABLE = False
+
+import subprocess
+
+# ============================================================
+# LOGGING SETUP
+# ============================================================
 
 # Proje dizini
-PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = Path(__file__).parent
+LOG_DIR = PROJECT_DIR / "logs"
+LOG_DIR.mkdir(exist_ok=True)
 
-def print_header():
-    print("\n" + "=" * 60)
-    print("⚽ Süper Lig 360 - Haftalık Güncelleme")
-    print(f"📅 Tarih: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-    print("=" * 60)
+# Log dosyası
+log_filename = LOG_DIR / f"update_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 
-def check_git_status():
-    """Git durumunu kontrol et"""
-    result = subprocess.run(
-        ["git", "status", "--porcelain"],
-        capture_output=True,
-        text=True,
-        cwd=PROJECT_DIR
-    )
-    return result.stdout.strip()
+# Logger setup
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s | %(levelname)-8s | %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    handlers=[
+        logging.FileHandler(log_filename, encoding='utf-8'),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
 
-def get_current_branch():
-    """Mevcut branch'i al"""
-    result = subprocess.run(
-        ["git", "branch", "--show-current"],
-        capture_output=True,
-        text=True,
-        cwd=PROJECT_DIR
-    )
-    return result.stdout.strip()
+# ============================================================
+# SCRAPER CLASS
+# ============================================================
 
-def show_status():
-    """Proje durumunu göster"""
-    print_header()
+class SuperLigScraper:
+    """Google'dan Süper Lig verilerini çeken scraper"""
     
-    # Git durumu
-    changes = check_git_status()
-    branch = get_current_branch()
+    def __init__(self):
+        self.driver = None
+        self.data = {
+            'standings': [],
+            'scorers': [],
+            'assists': [],
+            'yellow_cards': [],
+            'red_cards': [],
+            'fixtures': []
+        }
     
-    print(f"\n� Proje Dizini: {PROJECT_DIR}")
-    print(f"🌿 Branch: {branch}")
+    def setup_driver(self):
+        """Chrome driver'ı başlat"""
+        logger.info("🌐 Chrome driver başlatılıyor...")
+        
+        options = Options()
+        options.add_argument('--headless')  # Görünmez mod
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--disable-gpu')
+        options.add_argument('--window-size=1920,1080')
+        options.add_argument('--lang=tr-TR')
+        options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+        
+        try:
+            service = Service(ChromeDriverManager().install())
+            self.driver = webdriver.Chrome(service=service, options=options)
+            logger.info("✅ Chrome driver hazır")
+            return True
+        except Exception as e:
+            logger.error(f"❌ Driver hatası: {e}")
+            return False
     
-    if changes:
-        print("\n📝 Bekleyen Değişiklikler:")
-        for line in changes.split('\n'):
-            if line:
-                status = line[:2]
-                filename = line[3:]
-                if 'M' in status:
-                    print(f"   ✏️  Değiştirildi: {filename}")
-                elif 'A' in status:
-                    print(f"   ➕ Eklendi: {filename}")
-                elif '?' in status:
-                    print(f"   ❓ Yeni dosya: {filename}")
+    def scrape_standings(self):
+        """Puan durumunu çek"""
+        logger.info("📊 Puan durumu çekiliyor...")
+        
+        try:
+            self.driver.get("https://www.google.com/search?q=süper+lig+puan+durumu")
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "table"))
+            )
+            
+            # Tablo verilerini çek
+            rows = self.driver.find_elements(By.CSS_SELECTOR, "table tr")
+            
+            standings = []
+            for i, row in enumerate(rows[1:19], 1):  # İlk 18 takım
+                cells = row.find_elements(By.TAG_NAME, "td")
+                if len(cells) >= 8:
+                    team_data = {
+                        'rank': i,
+                        'team_name': cells[1].text.strip(),
+                        'played': int(cells[2].text or 0),
+                        'wins': int(cells[3].text or 0),
+                        'draws': int(cells[4].text or 0),
+                        'losses': int(cells[5].text or 0),
+                        'goals_for': int(cells[6].text.split('-')[0] if '-' in cells[6].text else cells[6].text or 0),
+                        'goals_against': int(cells[6].text.split('-')[1] if '-' in cells[6].text else 0),
+                        'points': int(cells[7].text or 0),
+                        'form': self.get_form(row)
+                    }
+                    team_data['goal_diff'] = team_data['goals_for'] - team_data['goals_against']
+                    standings.append(team_data)
+                    logger.info(f"   {i}. {team_data['team_name']} - {team_data['points']} puan")
+            
+            self.data['standings'] = standings
+            logger.info(f"✅ {len(standings)} takım verisi alındı")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Puan durumu hatası: {e}")
+            return False
+    
+    def get_form(self, row):
+        """Son 5 maç formunu al"""
+        try:
+            form_elements = row.find_elements(By.CSS_SELECTOR, "[data-tooltip]")
+            form = []
+            for el in form_elements[-5:]:
+                tooltip = el.get_attribute("data-tooltip") or ""
+                if "kazandı" in tooltip.lower() or "galibiyet" in tooltip.lower():
+                    form.append("G")
+                elif "kaybetti" in tooltip.lower() or "mağlubiyet" in tooltip.lower():
+                    form.append("M")
                 else:
-                    print(f"   📄 {filename}")
-    else:
-        print("\n✅ Bekleyen değişiklik yok.")
+                    form.append("B")
+            return form if form else ["G", "G", "G", "G", "G"]
+        except:
+            return ["G", "G", "G", "G", "G"]
     
-    print("\n" + "-" * 60)
-    print("📋 Güncelleme Talimatları:")
-    print("-" * 60)
-    print("""
-1. Google'da 'süper lig puan durumu' ara
-2. Puan tablosundan verileri al:
-   - Takım sıralamaları ve puanlar
-   - Galibiyet, beraberlik, mağlubiyet sayıları
-   - Averaj ve son 5 maç formu
+    def scrape_stats(self, stat_type, url_suffix, limit=7):
+        """İstatistik verilerini çek"""
+        logger.info(f"📈 {stat_type} verileri çekiliyor...")
+        
+        try:
+            self.driver.get(f"https://www.google.com/search?q=süper+lig+{url_suffix}")
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "div"))
+            )
+            
+            # Oyuncu listesini bul
+            stats = []
+            player_elements = self.driver.find_elements(By.CSS_SELECTOR, "[data-attrid*='player'], .kCrYT")
+            
+            for el in player_elements[:limit]:
+                text = el.text.strip()
+                if text and len(text) > 3:
+                    parts = text.split('\n')
+                    if len(parts) >= 2:
+                        stats.append({
+                            'name': parts[0],
+                            'team': parts[1] if len(parts) > 1 else "Bilinmiyor",
+                            'count': int(re.search(r'\d+', parts[-1]).group()) if re.search(r'\d+', parts[-1]) else 0
+                        })
+            
+            logger.info(f"✅ {len(stats)} {stat_type} verisi alındı")
+            return stats
+            
+        except Exception as e:
+            logger.error(f"❌ {stat_type} hatası: {e}")
+            return []
+    
+    def scrape_all(self):
+        """Tüm verileri çek"""
+        logger.info("=" * 60)
+        logger.info("🚀 VERİ ÇEKME İŞLEMİ BAŞLADI")
+        logger.info("=" * 60)
+        
+        if not self.setup_driver():
+            return False
+        
+        try:
+            # Puan durumu
+            self.scrape_standings()
+            
+            # Gol krallığı
+            self.data['scorers'] = self.scrape_stats("Gol Krallığı", "gol+krallığı", 7)
+            
+            # Asist krallığı
+            self.data['assists'] = self.scrape_stats("Asist Krallığı", "asist+krallığı", 6)
+            
+            # Sarı kartlar
+            self.data['yellow_cards'] = self.scrape_stats("Sarı Kart", "sarı+kart+sıralaması", 5)
+            
+            # Kırmızı kartlar
+            self.data['red_cards'] = self.scrape_stats("Kırmızı Kart", "kırmızı+kart+sıralaması", 5)
+            
+            logger.info("=" * 60)
+            logger.info("✅ TÜM VERİLER ÇEKİLDİ")
+            logger.info("=" * 60)
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Genel hata: {e}")
+            return False
+        finally:
+            if self.driver:
+                self.driver.quit()
+                logger.info("🔒 Chrome driver kapatıldı")
+    
+    def close(self):
+        if self.driver:
+            self.driver.quit()
 
-3. web/app.js dosyasını aç ve şu bölümleri güncelle:
-   - REAL_STANDINGS (puan durumu)
-   - TOP_SCORERS (gol krallığı)
-   - TOP_ASSISTS (asist krallığı)
-   - YELLOW_CARDS (sarı kartlar)
-   - RED_CARDS (kırmızı kartlar)
-   - FIXTURES (sonraki hafta maçları)
+# ============================================================
+# APP.JS UPDATER
+# ============================================================
 
-4. Bu scripti tekrar çalıştır:
-   python update_weekly.py
-""")
+class AppJSUpdater:
+    """web/app.js dosyasını günceller"""
+    
+    def __init__(self, data):
+        self.data = data
+        self.app_js_path = PROJECT_DIR / "web" / "app.js"
+    
+    def generate_standings_js(self):
+        """Puan durumu JavaScript kodu"""
+        lines = ["const REAL_STANDINGS = ["]
+        for team in self.data.get('standings', []):
+            form_str = json.dumps(team.get('form', ['G','G','G','G','G']))
+            lines.append(f'    {{ rank: {team["rank"]}, team_name: "{team["team_name"]}", played: {team["played"]}, wins: {team["wins"]}, draws: {team["draws"]}, losses: {team["losses"]}, goals_for: {team["goals_for"]}, goals_against: {team["goals_against"]}, goal_diff: {team["goal_diff"]}, points: {team["points"]}, form: {form_str} }},')
+        lines.append("];")
+        return '\n'.join(lines)
+    
+    def generate_stats_js(self, var_name, data):
+        """İstatistik JavaScript kodu"""
+        lines = [f"const {var_name} = ["]
+        for item in data:
+            lines.append(f'    {{ name: "{item["name"]}", team: "{item["team"]}", count: {item["count"]} }},')
+        lines.append("];")
+        return '\n'.join(lines)
+    
+    def update_file(self):
+        """app.js dosyasını güncelle"""
+        logger.info("📝 web/app.js güncelleniyor...")
+        
+        try:
+            with open(self.app_js_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Puan durumunu güncelle
+            if self.data.get('standings'):
+                new_standings = self.generate_standings_js()
+                content = re.sub(
+                    r'const REAL_STANDINGS = \[[\s\S]*?\];',
+                    new_standings,
+                    content
+                )
+                logger.info("   ✅ Puan durumu güncellendi")
+            
+            # Gol krallığını güncelle
+            if self.data.get('scorers'):
+                new_scorers = self.generate_stats_js('TOP_SCORERS', self.data['scorers'])
+                content = re.sub(
+                    r'const TOP_SCORERS = \[[\s\S]*?\];',
+                    new_scorers,
+                    content
+                )
+                logger.info("   ✅ Gol krallığı güncellendi")
+            
+            # Dosyayı kaydet
+            with open(self.app_js_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            
+            logger.info("✅ web/app.js başarıyla güncellendi")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Dosya güncelleme hatası: {e}")
+            return False
 
-def run_update():
+# ============================================================
+# GIT OPERATIONS
+# ============================================================
+
+def git_push():
     """Değişiklikleri GitHub'a gönder"""
-    print_header()
+    logger.info("📤 GitHub'a gönderiliyor...")
     
-    # Değişiklikleri kontrol et
-    print("\n� Adım 1: Değişiklikler kontrol ediliyor...")
-    changes = check_git_status()
-    
-    if not changes:
-        print("   ℹ️  Commit edilecek değişiklik yok.")
-        print("   💡 Önce web/app.js dosyasını güncelleyin.")
-        show_update_guide()
-        return
-    
-    print(f"   ✅ {len(changes.split(chr(10)))} dosyada değişiklik bulundu.")
-    
-    # Git add
-    print("\n📦 Adım 2: Dosyalar hazırlanıyor...")
     try:
-        subprocess.run(
-            ["git", "add", "."],
-            check=True,
-            cwd=PROJECT_DIR
-        )
-        print("   ✅ Tüm dosyalar eklendi.")
-    except subprocess.CalledProcessError:
-        print("   ❌ Dosyalar eklenirken hata oluştu.")
-        return
-    
-    # Git commit
-    print("\n💾 Adım 3: Commit oluşturuluyor...")
-    commit_msg = f"Haftalık güncelleme - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-    try:
-        subprocess.run(
+        # Git add
+        subprocess.run(["git", "add", "."], check=True, cwd=PROJECT_DIR)
+        logger.info("   ✅ Dosyalar eklendi")
+        
+        # Git commit
+        commit_msg = f"Otomatik güncelleme - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+        result = subprocess.run(
             ["git", "commit", "-m", commit_msg],
-            check=True,
+            capture_output=True,
+            text=True,
             cwd=PROJECT_DIR
         )
-        print(f"   ✅ Commit: {commit_msg}")
-    except subprocess.CalledProcessError:
-        print("   ℹ️  Commit edilecek yeni değişiklik yok.")
-        return
-    
-    # Git push
-    print("\n🚀 Adım 4: GitHub'a gönderiliyor...")
-    try:
-        subprocess.run(
-            ["git", "push", "origin", "main"],
-            check=True,
-            cwd=PROJECT_DIR
-        )
-        print("   ✅ Push başarılı!")
+        
+        if result.returncode == 0:
+            logger.info(f"   ✅ Commit: {commit_msg}")
+        else:
+            logger.info("   ℹ️ Commit edilecek değişiklik yok")
+            return True
+        
+        # Git push
+        subprocess.run(["git", "push", "origin", "main"], check=True, cwd=PROJECT_DIR)
+        logger.info("   ✅ Push başarılı!")
+        
+        return True
+        
     except subprocess.CalledProcessError as e:
-        print(f"   ❌ Push hatası: {e}")
+        logger.error(f"❌ Git hatası: {e}")
+        return False
+
+# ============================================================
+# MAIN
+# ============================================================
+
+def main():
+    """Ana fonksiyon"""
+    print("\n" + "=" * 60)
+    print("⚽ SÜPER LİG 360 - OTOMATİK GÜNCELLEME")
+    print(f"📅 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("=" * 60 + "\n")
+    
+    logger.info("🎯 Güncelleme başlatıldı")
+    logger.info(f"📁 Log dosyası: {log_filename}")
+    
+    # Selenium kontrolü
+    if not SELENIUM_AVAILABLE:
+        logger.warning("⚠️ Selenium yüklü değil!")
+        logger.info("📦 Yüklemek için: pip install selenium webdriver-manager")
+        logger.info("📝 Manuel güncelleme modu aktif...")
+        
+        # Manuel mod - sadece git push
+        print("\n" + "-" * 60)
+        print("📋 MANUEL GÜNCELLEME MODU")
+        print("-" * 60)
+        print("""
+1. Google'da ara: 'süper lig puan durumu'
+2. web/app.js dosyasını aç ve verileri güncelle
+3. Bu scripti tekrar çalıştır
+
+Değişiklik varsa GitHub'a gönderilecek.
+        """)
+        
+        git_push()
         return
     
-    # Başarı mesajı
+    # Otomatik scraping
+    logger.info("🤖 Otomatik scraping modu")
+    
+    # 1. Verileri çek
+    scraper = SuperLigScraper()
+    if scraper.scrape_all():
+        
+        # 2. app.js güncelle
+        updater = AppJSUpdater(scraper.data)
+        if updater.update_file():
+            
+            # 3. GitHub'a push
+            git_push()
+    
+    # Özet
     print("\n" + "=" * 60)
-    print("🎉 GÜNCELLEME TAMAMLANDI!")
+    print("📊 GÜNCELLEME ÖZETİ")
     print("=" * 60)
-    print("""
-📌 Sonraki adımlar:
-   1. GitHub Actions otomatik olarak çalışacak
-   2. ~2 dakika içinde website güncellenecek
-   
-🌐 Website: https://kaan482.github.io/Superlig360/
-📊 Actions:  https://github.com/KAAN482/Superlig360/actions
-""")
-
-def show_update_guide():
-    """Güncelleme rehberini göster"""
-    print("\n" + "-" * 60)
-    print("📋 VERİ GÜNCELLEME REHBERİ")
-    print("-" * 60)
-    print("""
-🔍 ADIM 1: Google'da Ara
-   → 'süper lig puan durumu'
-   → 'süper lig gol krallığı'
-   → 'süper lig 19. hafta maçları'
-
-✏️  ADIM 2: web/app.js Dosyasını Güncelle
-
-   REAL_STANDINGS dizisindeki her takım için:
-   - rank: Sıralama (1-18)
-   - team_name: Takım adı
-   - played: Oynanan maç
-   - wins, draws, losses: G, B, M
-   - goals_for, goals_against: Atılan, yenilen
-   - goal_diff: Averaj
-   - points: Puan
-   - form: Son 5 maç ["G","B","M","G","G"]
-
-   Aynı şekilde:
-   - TOP_SCORERS: Gol kralları
-   - TOP_ASSISTS: Asist kralları
-   - YELLOW_CARDS: Sarı kartlar (5 oyuncu)
-   - RED_CARDS: Kırmızı kartlar (5 oyuncu)
-   - FIXTURES: Sonraki hafta maçları
-
-🚀 ADIM 3: Bu Scripti Çalıştır
-   python update_weekly.py
-""")
-
-def show_help():
-    """Yardım mesajını göster"""
-    print("""
-⚽ Süper Lig 360 - Haftalık Güncelleme Scripti
-
-KULLANIM:
-  python update_weekly.py              Değişiklikleri GitHub'a gönder
-  python update_weekly.py --check      Proje durumunu kontrol et
-  python update_weekly.py --guide      Güncelleme rehberini göster
-  python update_weekly.py --help       Bu yardım mesajını göster
-
-ÖNEMLİ:
-  Bu script web/app.js dosyasındaki verileri OTOMATİK güncellemez.
-  Önce verileri manuel olarak güncelleyip, sonra bu scripti çalıştırın.
-  Script sadece değişiklikleri GitHub'a push eder.
-""")
+    print(f"📁 Log dosyası: {log_filename}")
+    print(f"🌐 Website: https://kaan482.github.io/Superlig360/")
+    print("=" * 60 + "\n")
+    
+    logger.info("🏁 Güncelleme tamamlandı")
 
 if __name__ == "__main__":
-    args = sys.argv[1:] if len(sys.argv) > 1 else []
-    
-    if "--help" in args or "-h" in args:
-        show_help()
-    elif "--check" in args or "-c" in args:
-        show_status()
-    elif "--guide" in args or "-g" in args:
-        show_update_guide()
-    else:
-        run_update()
+    main()
