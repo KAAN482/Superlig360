@@ -178,20 +178,25 @@ class FotMobScraper:
                     if temiz.lstrip('-').isdigit():
                         sayilar.append(int(temiz))
                 
-                # FotMob sırası: Oynanan, G, B, M, Goller, Averaj, Puan
-                # Genellikle en sondaki Puan'dır.
-                if len(sayilar) >= 6:
+                # FotMob sırası: Rank(#), Oynanan(O), G, B, M, Goller(AG), Yenilen(YG), Averaj(Av), Puan(P)
+                # Genellikle 9 sayı döner. [Rank, Played, Win, Draw, Loss, GF, GA, GD, Pts]
+                
+                start_idx = 0
+                if len(sayilar) == 9:
+                    start_idx = 1 # Rank'i atla
+                
+                if len(sayilar) >= 8:
                     try:
                         puan_durumu.append({
                             'sira': sira,
                             'takim_adi': takim['name'],
-                            'oynanan': sayilar[0],
-                            'galibiyet': sayilar[1],
-                            'beraberlik': sayilar[2],
-                            'maglubiyet': sayilar[3],
-                            'atilan_gol': sayilar[4], # Bu index değişebilir, basit tutuyoruz
-                            'yenilen_gol': sayilar[5] if len(sayilar)>5 else 0,
-                            'averaj': sayilar[-2] if len(sayilar) > 7 else (sayilar[4] - sayilar[5]),
+                            'oynanan': sayilar[start_idx],
+                            'galibiyet': sayilar[start_idx+1],
+                            'beraberlik': sayilar[start_idx+2],
+                            'maglubiyet': sayilar[start_idx+3],
+                            'atilan_gol': sayilar[start_idx+4],
+                            'yenilen_gol': sayilar[start_idx+5],
+                            'averaj': sayilar[start_idx+6], # GD
                             'puan': sayilar[-1],
                             'form': takim.get('form', ["?"]*5) # Çekilen form verisi
                         })
