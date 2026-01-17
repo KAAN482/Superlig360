@@ -319,18 +319,18 @@ class FotMobScraper:
             from datetime import timedelta
 
             script = """
-            const elements = Array.from(document.querySelectorAll('h3, a[href*="/match/"]'));
+            const elements = Array.from(document.querySelectorAll('h3, a[href*="/matches/"], a[class*="MatchWrapper"]'));
             let currentDate = 'Yakında';
             
             return elements.map(el => {
                 if (el.tagName === 'H3') {
-                    currentDate = el.innerText.trim();
+                    currentDate = el.innerText.trim().split(' - ')[0];
                     return null;
                 }
                 
                 if (el.tagName === 'A') {
-                    const teams = Array.from(el.querySelectorAll('span[class*="TeamName"], span[class*="name"]'));
-                    const time = el.querySelector('[class*="time"], [class*="Time"]');
+                    const teams = Array.from(el.querySelectorAll('span[class*="TeamName"]'));
+                    const time = el.querySelector('span[class*="LSMatchStatusTime"], div[class*="TimeCSS"]');
                     
                     if (teams.length < 2) return null;
                     

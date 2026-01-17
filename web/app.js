@@ -85,15 +85,15 @@ const RED_CARDS = [
 
 // Week 18 Fixtures from Google
 const FIXTURES = [
-    { home: "Başakşehir", away: "Fatih Karagümrük", date: "Yakında", time: "17:00" },
-    { home: "Galatasaray", away: "Gaziantep FK", date: "Yakında", time: "20:00" },
-    { home: "Kasımpaşa", away: "Antalyaspor", date: "Yakında", time: "14:30" },
-    { home: "Gençlerbirliği", away: "Samsunspor", date: "Yakında", time: "17:00" },
-    { home: "Kocaelispor", away: "Trabzonspor", date: "Yakında", time: "17:00" },
-    { home: "Alanyaspor", away: "Fenerbahçe", date: "Yakında", time: "20:00" },
-    { home: "Konyaspor", away: "Eyüpspor", date: "Yakında", time: "17:00" },
-    { home: "Beşiktaş", away: "Kayserispor", date: "Yakında", time: "20:00" },
-    { home: "Göztepe", away: "Rizespor", date: "Yakında", time: "20:00" },
+    { home: "Başakşehir", away: "Fatih Karagümrük", date: "17 Ocak", time: "17:00" },
+    { home: "Galatasaray", away: "Gaziantep FK", date: "17 Ocak", time: "20:00" },
+    { home: "Kasımpaşa", away: "Antalyaspor", date: "18 Ocak", time: "14:30" },
+    { home: "Gençlerbirliği", away: "Samsunspor", date: "18 Ocak", time: "17:00" },
+    { home: "Kocaelispor", away: "Trabzonspor", date: "18 Ocak", time: "17:00" },
+    { home: "Alanyaspor", away: "Fenerbahçe", date: "18 Ocak", time: "20:00" },
+    { home: "Konyaspor", away: "Eyüpspor", date: "19 Ocak", time: "17:00" },
+    { home: "Beşiktaş", away: "Kayserispor", date: "19 Ocak", time: "20:00" },
+    { home: "Göztepe", away: "Rizespor", date: "19 Ocak", time: "20:00" },
 ];
 
 // Get team data by name
@@ -281,23 +281,36 @@ function changeBackground(tabName) {
 }
 
 // Tab switching for main tabs
+function switchToTab(tabName) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+    const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+    const activeContent = document.getElementById(tabName);
+
+    if (activeBtn) activeBtn.classList.add('active');
+    if (activeContent) activeContent.classList.add('active');
+
+    changeBackground(tabName);
+}
+
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
-        changeBackground(btn.dataset.tab);
+        const tabName = btn.dataset.tab;
+        switchToTab(tabName);
+        window.location.hash = tabName;
     });
 });
 
 // Tab switching for stats sub-tabs
 document.querySelectorAll('.stats-tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+        const statName = btn.dataset.stat;
         document.querySelectorAll('.stats-tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.stats-content').forEach(c => c.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById(btn.dataset.stat).classList.add('active');
+        document.getElementById(statName).classList.add('active');
+        window.location.hash = `stats-${statName}`;
     });
 });
 
@@ -306,4 +319,20 @@ document.addEventListener('DOMContentLoaded', () => {
     loadStandings();
     loadStats();
     loadFixtures();
+
+    // URL hash'e göre sekme aç
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+        if (hash.startsWith('stats-')) {
+            // İstatistikler alt sekmesi
+            switchToTab('stats');
+            const statTab = hash.replace('stats-', '');
+            setTimeout(() => {
+                const statBtn = document.querySelector(`.stats-tab-btn[data-stat="${statTab}"]`);
+                if (statBtn) statBtn.click();
+            }, 100);
+        } else if (['standings', 'stats', 'fixtures'].includes(hash)) {
+            switchToTab(hash);
+        }
+    }
 });
