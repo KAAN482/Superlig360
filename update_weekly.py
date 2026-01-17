@@ -178,6 +178,8 @@ class FotMobScraper:
                     if temiz.lstrip('-').isdigit():
                         sayilar.append(int(temiz))
                 
+                print(f"DEBUG: {takim['name']} - Len: {len(sayilar)} - {sayilar}")
+                
                 # FotMob sırası: Rank(#), Oynanan(O), G, B, M, Goller(AG), Yenilen(YG), Averaj(Av), Puan(P)
                 # Genellikle 9 sayı döner. [Rank, Played, Win, Draw, Loss, GF, GA, GD, Pts]
                 
