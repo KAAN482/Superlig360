@@ -310,6 +310,14 @@ class FotMobScraper:
                     log("   Fikstür yüklenemedi", "ERROR")
                     return False
             
+            # Türkçe Aylar
+            AYLAR = {
+                1: "Ocak", 2: "Şubat", 3: "Mart", 4: "Nisan", 5: "Mayıs", 6: "Haziran",
+                7: "Temmuz", 8: "Ağustos", 9: "Eylül", 10: "Ekim", 11: "Kasım", 12: "Aralık"
+            }
+
+            from datetime import timedelta
+
             script = """
             return Array.from(document.querySelectorAll('a[class*="MatchWrapper"], a[href*="/matches/"]')).slice(0, 15).map(a => {
                 // Takım isimlerini bul (genellikle 2 tane olur)
@@ -331,14 +339,26 @@ class FotMobScraper:
             maclar = self.driver.execute_script(script)
             
             fikstur = []
+            simdi = datetime.now()
+            
             for mac in maclar[:9]: # İlk 9 maç
+                ham_tarih = mac['date']
+                final_tarih = ham_tarih
+                
+                # Tarih dönüştürme mantığı
+                if "Bugün" in ham_tarih:
+                    final_tarih = f"{simdi.day} {AYLAR[simdi.month]}"
+                elif "Yarın" in ham_tarih:
+                    yarin = simdi + timedelta(days=1)
+                    final_tarih = f"{yarin.day} {AYLAR[yarin.month]}"
+                
                 fikstur.append({
                     'ev_sahibi': mac['home'],
                     'deplasman': mac['away'],
-                    'tarih': mac['date'],
+                    'tarih': final_tarih,
                     'saat': mac['time']
                 })
-                log(f"   {mac['home']} vs {mac['away']}")
+                log(f"   {mac['home']} vs {mac['away']} ({final_tarih})")
             
             if fikstur:
                 self.veri['fikstur'] = fikstur
