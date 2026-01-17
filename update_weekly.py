@@ -187,15 +187,6 @@ class FotMobScraper:
                 
                 if len(sayilar) >= 8:
                     try:
-                        # GD (Averaj) kontrolü
-                        averaj = 0
-                        # Eğer yeterince eleman varsa ve GD mevcutsa
-                        if len(sayilar) > start_idx + 6:
-                            averaj = sayilar[start_idx + 6]
-                        else:
-                            # Yoksa hesapla (AG - YG)
-                            averaj = sayilar[start_idx + 4] - sayilar[start_idx + 5]
-
                         puan_durumu.append({
                             'sira': sira,
                             'takim_adi': takim['name'],
@@ -205,7 +196,7 @@ class FotMobScraper:
                             'maglubiyet': sayilar[start_idx+3],
                             'atilan_gol': sayilar[start_idx+4],
                             'yenilen_gol': sayilar[start_idx+5],
-                            'averaj': averaj,
+                            'averaj': sayilar[start_idx+4] - sayilar[start_idx+5],
                             'puan': sayilar[-1],
                             'form': takim.get('form', ["?"]*5)
                         })
