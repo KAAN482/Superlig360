@@ -133,13 +133,27 @@ class FotMobScraper:
                 const row = a.closest('tr') || a.closest('div[role="row"]') || a.closest('div[class*="TableRowCSS"]');
                 
                 let stats = [];
+                let form = [];
+                
                 if (row) {
                     // Satırdaki tüm metinleri al
                     stats = Array.from(row.querySelectorAll('td, span, div[class*="TableCell"]')).map(el => el.innerText.trim());
+                    
+                    // Form bilgisini çek (G/B/M)
+                    const formIcons = row.querySelectorAll('[class*="team-form__win"], [class*="team-form__draw"], [class*="team-form__loss"]');
+                    if (formIcons.length > 0) {
+                        form = Array.from(formIcons).map(icon => {
+                            const text = icon.innerText.trim();
+                            if (text === "G" || text === "W") return "G";
+                            if (text === "B" || text === "D") return "B";
+                            if (text === "M" || text === "L") return "M";
+                            return null;
+                        }).filter(f => f !== null).slice(-5); // Son 5 maç
+                    }
                 }
                 
                 if (match && name && name.length > 2) {
-                    return { id: match[1], name: name, stats: stats };
+                    return { id: match[1], name: name, stats: stats, form: form };
                 }
                 return null;
             }).filter(t => t !== null);
@@ -179,9 +193,11 @@ class FotMobScraper:
                             'yenilen_gol': sayilar[5] if len(sayilar)>5 else 0,
                             'averaj': sayilar[-2] if len(sayilar) > 7 else (sayilar[4] - sayilar[5]),
                             'puan': sayilar[-1],
-                            'form': ["G", "G", "G", "G", "G"]
+                            'form': takim.get('form', ["?"]*5) # Çekilen form verisi
                         })
-                        log(f"   {sira}. {takim['name']} - {sayilar[-1]} puan")
+                        
+                        form_str = "-".join(takim.get('form', []))
+                        log(f"   {sira}. {takim['name']} - {sayilar[-1]}p ({form_str})")
                         sira += 1
                         if sira > 18: break
                     except Exception:
