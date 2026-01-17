@@ -178,17 +178,24 @@ class FotMobScraper:
                     if temiz.lstrip('-').isdigit():
                         sayilar.append(int(temiz))
                 
-                print(f"DEBUG: {takim['name']} - Len: {len(sayilar)} - {sayilar}")
-                
-                # FotMob sırası: Rank(#), Oynanan(O), G, B, M, Goller(AG), Yenilen(YG), Averaj(Av), Puan(P)
-                # Genellikle 9 sayı döner. [Rank, Played, Win, Draw, Loss, GF, GA, GD, Pts]
-                
+                # FotMob sırası: Rank(#), Oynanan(O), G, B, M, AG, YG, Av, P
                 start_idx = 0
-                if len(sayilar) == 9:
-                    start_idx = 1 # Rank'i atla
+                
+                # Eğer ilk sayı sıra numarasına yakınsa (Rank), onu atla
+                if len(sayilar) > 0 and abs(sayilar[0] - sira) <= 2:
+                    start_idx = 1
                 
                 if len(sayilar) >= 8:
                     try:
+                        # GD (Averaj) kontrolü
+                        averaj = 0
+                        # Eğer yeterince eleman varsa ve GD mevcutsa
+                        if len(sayilar) > start_idx + 6:
+                            averaj = sayilar[start_idx + 6]
+                        else:
+                            # Yoksa hesapla (AG - YG)
+                            averaj = sayilar[start_idx + 4] - sayilar[start_idx + 5]
+
                         puan_durumu.append({
                             'sira': sira,
                             'takim_adi': takim['name'],
@@ -198,9 +205,9 @@ class FotMobScraper:
                             'maglubiyet': sayilar[start_idx+3],
                             'atilan_gol': sayilar[start_idx+4],
                             'yenilen_gol': sayilar[start_idx+5],
-                            'averaj': sayilar[start_idx+6], # GD
+                            'averaj': averaj,
                             'puan': sayilar[-1],
-                            'form': takim.get('form', ["?"]*5) # Çekilen form verisi
+                            'form': takim.get('form', ["?"]*5)
                         })
                         
                         form_str = "-".join(takim.get('form', []))
