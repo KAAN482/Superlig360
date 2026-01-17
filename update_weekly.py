@@ -39,7 +39,7 @@ PROJECT_DIR = Path(__file__).parent
 FOTMOB_BASE = "https://www.fotmob.com/tr/leagues/71"
 FOTMOB_URLS = {
     'tablo': f"{FOTMOB_BASE}/table/super-lig",
-    'fikstur': f"{FOTMOB_BASE}/fixtures/super-lig?group=by-round",
+    'fikstur': f"{FOTMOB_BASE}/matches/super-lig?group=by-date",
     'stats': f"{FOTMOB_BASE}/stats/super-lig",
     # Detaylı istatistik sayfaları
     'goller': f"{FOTMOB_BASE}/stats/season/27244/players/goals/super-lig",
@@ -319,20 +319,29 @@ class FotMobScraper:
             from datetime import timedelta
 
             script = """
-            return Array.from(document.querySelectorAll('a[class*="MatchWrapper"], a[href*="/matches/"]')).slice(0, 15).map(a => {
-                // Takım isimlerini bul (genellikle 2 tane olur)
-                const teams = Array.from(a.querySelectorAll('span[class*="TeamName"], span[class*="name"]'));
-                const time = a.querySelector('[class*="time"], [class*="Time"]');
-                const date = a.closest('div').querySelector('[class*="DateHeader"], [class*="date"]') || a.querySelector('[class*="Date"]');
+            const elements = Array.from(document.querySelectorAll('h3, a[href*="/match/"]'));
+            let currentDate = 'Yakında';
+            
+            return elements.map(el => {
+                if (el.tagName === 'H3') {
+                    currentDate = el.innerText.trim();
+                    return null;
+                }
                 
-                if (teams.length < 2) return null;
-                
-                return {
-                    home: teams[0].innerText.trim(),
-                    away: teams[1].innerText.trim(),
-                    date: date ? date.innerText.trim() : 'Yakında',
-                    time: time ? time.innerText.trim() : '--:--'
-                };
+                if (el.tagName === 'A') {
+                    const teams = Array.from(el.querySelectorAll('span[class*="TeamName"], span[class*="name"]'));
+                    const time = el.querySelector('[class*="time"], [class*="Time"]');
+                    
+                    if (teams.length < 2) return null;
+                    
+                    return {
+                        home: teams[0].innerText.trim(),
+                        away: teams[1].innerText.trim(),
+                        date: currentDate,
+                        time: time ? time.innerText.trim() : '--:--'
+                    };
+                }
+                return null;
             }).filter(m => m !== null);
             """
             
@@ -351,6 +360,11 @@ class FotMobScraper:
                 elif "Yarın" in ham_tarih:
                     yarin = simdi + timedelta(days=1)
                     final_tarih = f"{yarin.day} {AYLAR[yarin.month]}"
+                else:
+                    # Örn: "19 Ocak Pazartesi" -> "19 Ocak"
+                    parcalar = ham_tarih.split()
+                    if len(parcalar) >= 2 and parcalar[0].isdigit():
+                        final_tarih = f"{parcalar[0]} {parcalar[1]}"
                 
                 fikstur.append({
                     'ev_sahibi': mac['home'],
