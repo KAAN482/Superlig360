@@ -803,6 +803,12 @@ tbody tr:nth-child(3) td:first-child {
     border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
+.fixture-team .team-info-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .fixture-team .team-rank-box {
     background: rgba(139, 92, 246, 0.15);
     color: var(--primary);
