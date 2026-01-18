@@ -786,6 +786,10 @@ tbody tr:nth-child(3) td:first-child {
     flex: 1;
 }
 
+.fixture-team.away {
+    align-items: flex-end;
+}
+
 .fixture-team .team-form-box {
     display: flex;
     gap: 3px;
