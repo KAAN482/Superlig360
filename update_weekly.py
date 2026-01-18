@@ -237,16 +237,22 @@ class FotMobScraper:
             const rows = Array.from(document.querySelectorAll('a[href*="/players/"]'));
             return rows.map(row => {
                 try {
-                    // Oyuncu İsmi (Genelde ilk metin)
-                    const textParts = row.innerText.split('\\n');
-                    const name = textParts[0].trim();
-                    const value = textParts[textParts.length - 1].trim();
+                    // Oyuncu İsmi: Text parçalarından sayısal olmayan ve en uzun olanı al
+                    const textParts = row.innerText.split('\\n').map(t => t.trim()).filter(t => t.length > 0);
+                    // Genelde yapı: [Sıra, İsim, ..., Değer]
+                    // Sayı olmayan ilk parça isimdir
+                    const name = textParts.find(t => isNaN(t) && t.length > 2) || textParts[0];
+                    const value = textParts[textParts.length - 1]; // Son parça değerdir
                     
-                    // Takım İsmi (Resim alt text'inden)
+                    // Takım İsmi: Resim alt textlerinden isim olmayan ve "Trendyol" içermeyen
                     const imgs = Array.from(row.querySelectorAll('img'));
-                    // Oyuncu resmi dışındaki ilk resim genelde takım logosudur
-                    // Veya ismi oyuncu ismiyle aynı olmayan resim
-                    const teamImg = imgs.find(img => img.alt && img.alt !== name && img.alt.length > 2);
+                    const teamImg = imgs.find(img => {
+                        const alt = img.alt;
+                        if (!alt || alt.length < 3) return false;
+                        if (alt === name) return false;
+                        if (alt.includes("Süper Lig")) return false; 
+                        return true;
+                    });
                     const team = teamImg ? teamImg.alt : "Bilinmiyor";
                     
                     return { 

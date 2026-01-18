@@ -22,20 +22,20 @@ const REAL_STANDINGS = [
 
 // Gol Krallığı (FotMob 2025/2026)
 const TOP_SCORERS = [
-    { name: "1", team: "Bilinmiyor", count: 13 },
-    { name: "2", team: "Bilinmiyor", count: 11 },
-    { name: "3", team: "Bilinmiyor", count: 9 },
-    { name: "4", team: "Bilinmiyor", count: 9 },
-    { name: "5", team: "Bilinmiyor", count: 8 },
+    { name: "Eldor Shomurodov", team: "Bilinmiyor", count: 13 },
+    { name: "Paul Onuachu", team: "Bilinmiyor", count: 11 },
+    { name: "Mauro Icardi", team: "Bilinmiyor", count: 9 },
+    { name: "Anderson Talisca", team: "Bilinmiyor", count: 9 },
+    { name: "Felipe Augusto", team: "Bilinmiyor", count: 8 },
 ];
 
 // Asist Krallığı (FotMob 2025/2026)
 const TOP_ASSISTS = [
-    { name: "1", team: "Bilinmiyor", count: 7 },
-    { name: "2", team: "Bilinmiyor", count: 6 },
-    { name: "3", team: "Bilinmiyor", count: 6 },
-    { name: "4", team: "Bilinmiyor", count: 6 },
-    { name: "5", team: "Bilinmiyor", count: 5 },
+    { name: "Baris Alper Yilmaz", team: "Bilinmiyor", count: 7 },
+    { name: "Yunus Akgün", team: "Bilinmiyor", count: 6 },
+    { name: "Alexandru Maxim", team: "Bilinmiyor", count: 6 },
+    { name: "Václav Cerny", team: "Bilinmiyor", count: 6 },
+    { name: "Göktan Gürpüz", team: "Bilinmiyor", count: 5 },
 ];
 
 // En İyi FotMob Rating (2025/2026)
@@ -49,38 +49,38 @@ const TOP_RATING = [
 
 // Kaçırılan Büyük Fırsatlar (FotMob 2025/2026)
 const MISSED_CHANCES = [
-    { name: "1", team: "Bilinmiyor", count: 10 },
-    { name: "2", team: "Bilinmiyor", count: 10 },
-    { name: "3", team: "Bilinmiyor", count: 9 },
-    { name: "4", team: "Bilinmiyor", count: 9 },
-    { name: "5", team: "Bilinmiyor", count: 9 },
+    { name: "Paul Onuachu", team: "Bilinmiyor", count: 10 },
+    { name: "Tammy Abraham", team: "Bilinmiyor", count: 10 },
+    { name: "Victor Osimhen", team: "Bilinmiyor", count: 9 },
+    { name: "Ali Sowe", team: "Bilinmiyor", count: 9 },
+    { name: "Janderson", team: "Bilinmiyor", count: 9 },
 ];
 
 // Kalesini Gole Kapatanlar (FotMob 2025/2026)
 const CLEAN_SHEETS = [
-    { name: "1", team: "Bilinmiyor", count: 11 },
-    { name: "2", team: "Bilinmiyor", count: 7 },
-    { name: "3", team: "Bilinmiyor", count: 6 },
-    { name: "4", team: "Bilinmiyor", count: 6 },
-    { name: "5", team: "Bilinmiyor", count: 5 },
+    { name: "Mateusz Lis", team: "Bilinmiyor", count: 11 },
+    { name: "Ertugrul Taskiran", team: "Bilinmiyor", count: 7 },
+    { name: "Ugurcan Cakir", team: "Bilinmiyor", count: 6 },
+    { name: "Aleksandar Jovanovic", team: "Bilinmiyor", count: 6 },
+    { name: "Ederson", team: "Bilinmiyor", count: 5 },
 ];
 
 // Sarı Kartlar (FotMob 2025/2026)
 const YELLOW_CARDS = [
-    { name: "1", team: "Bilinmiyor", count: 7 },
-    { name: "2", team: "Bilinmiyor", count: 6 },
-    { name: "3", team: "Bilinmiyor", count: 6 },
-    { name: "7", team: "Bilinmiyor", count: 5 },
-    { name: "8", team: "Bilinmiyor", count: 5 },
+    { name: "Emirhan Topcu", team: "Bilinmiyor", count: 7 },
+    { name: "Kevin Rodrigues", team: "Bilinmiyor", count: 6 },
+    { name: "Arda Kizildag", team: "Bilinmiyor", count: 6 },
+    { name: "Samet Akaydin", team: "Bilinmiyor", count: 6 },
+    { name: "Show", team: "Bilinmiyor", count: 6 },
 ];
 
 // Kırmızı Kartlar (FotMob 2025/2026)
 const RED_CARDS = [
-    { name: "1", team: "Bilinmiyor", count: 2 },
-    { name: "2", team: "Bilinmiyor", count: 2 },
-    { name: "3", team: "Bilinmiyor", count: 1 },
-    { name: "4", team: "Bilinmiyor", count: 1 },
-    { name: "5", team: "Bilinmiyor", count: 1 },
+    { name: "Orkun Kökcü", team: "Bilinmiyor", count: 2 },
+    { name: "Thalisson", team: "Bilinmiyor", count: 2 },
+    { name: "Kevin Rodrigues", team: "Bilinmiyor", count: 1 },
+    { name: "Jure Balkovec", team: "Bilinmiyor", count: 1 },
+    { name: "Davinson Sánchez", team: "Bilinmiyor", count: 1 },
 ];
 
 // Week 18 Fixtures from Google
