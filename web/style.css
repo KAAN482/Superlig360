@@ -794,27 +794,29 @@ tbody tr:nth-child(3) td:first-child {
     align-items: flex-end;
 }
 
-.fixture-team .team-info {
+.fixture-team .team-form-box {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    gap: 3px;
+    background: rgba(99, 102, 241, 0.1);
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.fixture-team .team-rank-box {
+    background: rgba(139, 92, 246, 0.15);
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 .fixture-team .team-name {
     font-weight: 600;
     font-size: 1rem;
     color: white;
-}
-
-.fixture-team .team-rank {
-    font-size: 0.85rem;
-    color: var(--primary);
-    font-weight: 600;
-}
-
-.fixture-team .team-form {
-    display: flex;
-    gap: 3px;
 }
 
 .fixture-team .team-form .form-badge {

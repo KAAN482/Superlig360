@@ -232,19 +232,15 @@ function loadFixtures() {
         <div class="fixture-card ${isPlayed ? 'played-match' : ''}">
             <div class="fixture-team-row">
                 <div class="fixture-team home">
-                    <div class="team-form">${homeData ? renderFormBadges(homeData.form) : ''}</div>
-                    <div class="team-info">
-                        <span class="team-rank">${homeData ? homeData.rank + '.' : ''}</span>
-                        <span class="team-name">${match.home}</span>
-                    </div>
+                    <div class="team-form-box">${homeData ? renderFormBadges(homeData.form) : ''}</div>
+                    <div class="team-rank-box">${homeData ? homeData.rank + '.' : ''}</div>
+                    <span class="team-name">${match.home}</span>
                 </div>
                 <span class="vs">vs</span>
                 <div class="fixture-team away">
-                    <div class="team-info">
-                        <span class="team-name">${match.away}</span>
-                        <span class="team-rank">${awayData ? awayData.rank + '.' : ''}</span>
-                    </div>
-                    <div class="team-form">${awayData ? renderFormBadges(awayData.form) : ''}</div>
+                    <div class="team-form-box">${awayData ? renderFormBadges(awayData.form) : ''}</div>
+                    <div class="team-rank-box">${awayData ? awayData.rank + '.' : ''}</div>
+                    <span class="team-name">${match.away}</span>
                 </div>
             </div>
             <div class="fixture-info">
