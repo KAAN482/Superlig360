@@ -205,12 +205,13 @@ function loadStandings() {
 // Render stats grid
 function renderStatsGrid(data, gridId, label) {
     const grid = document.getElementById(gridId);
+    const grid = document.getElementById(gridId);
     grid.innerHTML = data.map((item, index) => `
         <div class="stat-card ${index < 3 ? 'top-3' : ''}">
             <div class="stat-rank">${index + 1}</div>
             <div class="stat-info">
                 <div class="stat-name">${item.name}</div>
-                <div class="stat-team">${item.team}</div>
+                ${item.team !== 'Bilinmiyor' ? `<div class="stat-team">${item.team}</div>` : ''}
             </div>
             <div class="stat-count">${item.count}</div>
         </div>
