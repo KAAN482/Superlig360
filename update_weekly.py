@@ -334,11 +334,17 @@ class FotMobScraper:
                     
                     if (teams.length < 2) return null;
                     
+                    // Check if match is played (has score)
+                    const scoreEl = el.querySelector('span[class*="LSMatchStatusScore"]');
+                    const isPlayed = scoreEl !== null;
+                    
                     return {
                         home: teams[0].innerText.trim(),
                         away: teams[1].innerText.trim(),
                         date: currentDate,
-                        time: time ? time.innerText.trim() : '--:--'
+                        time: time ? time.innerText.trim() : '--:--',
+                        score: isPlayed ? scoreEl.innerText.trim() : null,
+                        status: isPlayed ? 'played' : 'upcoming'
                     };
                 }
                 return null;
@@ -366,13 +372,24 @@ class FotMobScraper:
                     if len(parcalar) >= 2 and parcalar[0].isdigit():
                         final_tarih = f"{parcalar[0]} {parcalar[1]}"
                 
-                fikstur.append({
+                fikstur_item = {
                     'ev_sahibi': mac['home'],
                     'deplasman': mac['away'],
                     'tarih': final_tarih,
                     'saat': mac['time']
-                })
-                log(f"   {mac['home']} vs {mac['away']} ({final_tarih})")
+                }
+                
+                # Oynanan maçlar için skor ekle
+                if mac.get('status') == 'played' and mac.get('score'):
+                    fikstur_item['skor'] = mac['score']
+                    fikstur_item['durum'] = 'oynandi'
+                    log(f"   {mac['home']} {mac['score']} {mac['away']}")
+                else:
+                    fikstur_item['skor'] = None
+                    fikstur_item['durum'] = 'oynanacak'
+                    log(f"   {mac['home']} vs {mac['away']} ({final_tarih})")
+                
+                fikstur.append(fikstur_item)
             
             if fikstur:
                 self.veri['fikstur'] = fikstur
@@ -432,7 +449,9 @@ class AppJSGuncelleyici:
     def fikstur_js(self):
         lines = ["const FIXTURES = ["]
         for m in self.veri.get('fikstur', []):
-            lines.append(f'    {{ home: "{m["ev_sahibi"]}", away: "{m["deplasman"]}", date: "{m["tarih"]}", time: "{m["saat"]}" }},')
+            skor = f'"{m["skor"]}"' if m.get('skor') else 'null'
+            durum = f'"{m["durum"]}"' if m.get('durum') else '"oynanacak"'
+            lines.append(f'    {{ home: "{m["ev_sahibi"]}", away: "{m["deplasman"]}", date: "{m["tarih"]}", time: "{m["saat"]}", score: {skor}, status: {durum} }},')
         lines.append("];")
         return '\n'.join(lines)
 

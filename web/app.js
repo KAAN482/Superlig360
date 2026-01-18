@@ -225,8 +225,11 @@ function loadFixtures() {
         const awayData = getTeamData(match.away);
         const prediction = predictMatch(match.home, match.away);
 
+        // Oynanan maç mı kontrolü
+        const isPlayed = match.status === 'oynandi' && match.score;
+
         return `
-        <div class="fixture-card">
+        <div class="fixture-card ${isPlayed ? 'played-match' : ''}">
             <div class="fixture-team-row">
                 <div class="fixture-team home">
                     <div class="team-form">${homeData ? renderFormBadges(homeData.form) : ''}</div>
@@ -241,14 +244,19 @@ function loadFixtures() {
                 </div>
             </div>
             <div class="fixture-info">
-                <span class="fixture-date">📅 ${match.date}</span>
-                <span class="fixture-time">⏰ ${match.time}</span>
+                ${isPlayed
+                ? `<span class="fixture-score">⚽ ${match.score}</span>`
+                : `<span class="fixture-date">📅 ${match.date}</span>
+                       <span class="fixture-time">⏰ ${match.time}</span>`
+            }
             </div>
+            ${!isPlayed ? `
             <div class="ai-prediction">
                 <span class="ai-label">🤖 AI Tahmini:</span>
                 <span class="ai-result ${prediction.prediction === 'Beraberlik' ? 'draw' : ''}">${prediction.prediction}</span>
                 <span class="ai-confidence">(%${prediction.confidence})</span>
             </div>
+            ` : ''}
         </div>
     `}).join('');
 }

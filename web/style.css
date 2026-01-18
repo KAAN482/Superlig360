@@ -361,6 +361,26 @@ tbody tr:nth-child(3) td:first-child {
     gap: 8px;
 }
 
+.fixture-date,
+.fixture-time {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.fixture-score {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--success);
+    letter-spacing: 0.05em;
+}
+
+.played-match {
+    border-left: 3px solid var(--success);
+}
+
 /* Chart */
 #market-chart {
     max-height: 500px;
