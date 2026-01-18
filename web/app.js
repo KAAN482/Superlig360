@@ -85,15 +85,15 @@ const RED_CARDS = [
 
 // Week 18 Fixtures from Google
 const FIXTURES = [
-    { home: "Başakşehir", away: "Fatih Karagümrük", date: "Dün", time: "--:--" },
-    { home: "Galatasaray", away: "Gaziantep FK", date: "Dün", time: "--:--" },
-    { home: "Kasımpaşa", away: "Antalyaspor", date: "18 Ocak", time: "14:30" },
-    { home: "Gençlerbirliği", away: "Samsunspor", date: "18 Ocak", time: "17:00" },
-    { home: "Kocaelispor", away: "Trabzonspor", date: "18 Ocak", time: "17:00" },
-    { home: "Alanyaspor", away: "Fenerbahçe", date: "18 Ocak", time: "20:00" },
-    { home: "Konyaspor", away: "Eyüpspor", date: "19 Ocak", time: "17:00" },
-    { home: "Beşiktaş", away: "Kayserispor", date: "19 Ocak", time: "20:00" },
-    { home: "Göztepe", away: "Rizespor", date: "19 Ocak", time: "20:00" },
+    { home: "Başakşehir", away: "Fatih Karagümrük", date: "Dün", time: "--:--", score: "2 - 1", status: "oynandi" },
+    { home: "Galatasaray", away: "Gaziantep FK", date: "Dün", time: "--:--", score: "1 - 1", status: "oynandi" },
+    { home: "Kasımpaşa", away: "Antalyaspor", date: "18 Ocak", time: "14:30", score: null, status: "oynanacak" },
+    { home: "Gençlerbirliği", away: "Samsunspor", date: "18 Ocak", time: "17:00", score: null, status: "oynanacak" },
+    { home: "Kocaelispor", away: "Trabzonspor", date: "18 Ocak", time: "17:00", score: null, status: "oynanacak" },
+    { home: "Alanyaspor", away: "Fenerbahçe", date: "18 Ocak", time: "20:00", score: null, status: "oynanacak" },
+    { home: "Konyaspor", away: "Eyüpspor", date: "19 Ocak", time: "17:00", score: null, status: "oynanacak" },
+    { home: "Beşiktaş", away: "Kayserispor", date: "19 Ocak", time: "20:00", score: null, status: "oynanacak" },
+    { home: "Göztepe", away: "Rizespor", date: "19 Ocak", time: "20:00", score: null, status: "oynanacak" },
 ];
 
 // Get team data by name

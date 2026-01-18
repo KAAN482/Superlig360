@@ -224,7 +224,7 @@ class FotMobScraper:
             self.driver.get(FOTMOB_URLS[url_anahtar])
             
             try:
-                WebDriverWait(self.driver, 20).until(
+                WebDriverWait(self.driver, 30).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/players/']"))
                 )
                 time.sleep(3)
@@ -295,11 +295,11 @@ class FotMobScraper:
             self.driver.get(FOTMOB_URLS['fikstur'])
             
             try:
-                # Maç wrapper'larını bekle
-                WebDriverWait(self.driver, 20).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, "a[class*='MatchWrapper']"))
+                # Fikstür sayfasının yüklenmesini bekle
+                WebDriverWait(self.driver, 30).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/match/']"))
                 )
-                time.sleep(3)
+                time.sleep(5)
             except TimeoutException:
                 # Alternatif selector
                 try:
