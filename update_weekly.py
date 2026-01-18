@@ -232,52 +232,66 @@ class FotMobScraper:
                 log(f"   {turkce_adi} yüklenemedi", "ERROR")
                 return False
             
+            # JavaScript ile daha detaylı veri çekme (Takım ismi resim alt text'inde)
             script = """
-            return Array.from(document.querySelectorAll('a[href*="/players/"]')).slice(0, 20).map(a => {
-                const row = a.closest('tr') || a.closest('div[class*="row"]') || a.closest('div[class*="Row"]');
-                if (!row) return null;
-                
-                const name = a.innerText.split('\\n')[0].trim();
-                const stat = row.querySelector('[class*="StatValue"], [class*="stat"], [class*="Stat"]');
-                
-                const teamImg = row.querySelector('img[src*="teamlogo"]');
-                let teamId = null;
-                if (teamImg) {
-                    const match = teamImg.src.match(/teamlogo\\/(\\d+)/);
-                    if (match) teamId = match[1];
+            const rows = Array.from(document.querySelectorAll('a[href*="/players/"]'));
+            return rows.map(row => {
+                try {
+                    // Oyuncu İsmi (Genelde ilk metin)
+                    const textParts = row.innerText.split('\\n');
+                    const name = textParts[0].trim();
+                    const value = textParts[textParts.length - 1].trim();
+                    
+                    // Takım İsmi (Resim alt text'inden)
+                    const imgs = Array.from(row.querySelectorAll('img'));
+                    // Oyuncu resmi dışındaki ilk resim genelde takım logosudur
+                    // Veya ismi oyuncu ismiyle aynı olmayan resim
+                    const teamImg = imgs.find(img => img.alt && img.alt !== name && img.alt.length > 2);
+                    const team = teamImg ? teamImg.alt : "Bilinmiyor";
+                    
+                    return { 
+                        name: name,
+                        team: team,
+                        value: value
+                    };
+                } catch (e) {
+                    return null;
                 }
-                
-                return {
-                    name: name,
-                    stat: stat ? stat.innerText.trim() : null,
-                    teamId: teamId
-                };
-            }).filter(p => p && p.name && p.stat);
+            }).filter(x => x !== null);
             """
             
-            oyuncular = self.driver.execute_script(script)
+            elements = self.driver.execute_script(script)
             
             istatistikler = []
             goruldu = set()
-            
-            for oyuncu in oyuncular:
-                if oyuncu['name'] in goruldu or len(istatistikler) >= 5: continue
-                goruldu.add(oyuncu['name'])
-                
+
+            for item in elements:
+                if item['name'] in goruldu or len(istatistikler) >= 5: continue
+                goruldu.add(item['name'])
+
                 try:
-                    stat_str = oyuncu['stat'].replace(',', '.')
-                    sayi = float(stat_str) if '.' in stat_str else int(stat_str)
-                except:
+                    oyuncu_adi = item['name']
+                    takim_adi = item['team']
+                    deger_str = item['value']
+                    
+                    # Sayısal değeri temizle
+                    # "12 gol", "7.5" gibi değerleri işlemek
+                    if not deger_str[-1].isdigit(): 
+                        deger_str = deger_str.split()[0]
+                    
+                    sayi = float(deger_str.replace(',', '.')) if '.' in deger_str else int(deger_str)
+                    
+                    if not oyuncu_adi or not takim_adi: continue
+                    
+                    istatistikler.append({
+                        'oyuncu': oyuncu_adi,
+                        'takim': takim_adi,
+                        'sayi': sayi
+                    })
+                    log(f"   {len(istatistikler)}. {oyuncu_adi} ({takim_adi}) - {sayi}")
+                except Exception as ex:
+                    # log(f"   İstatistik işleme hatası: {ex} - {item}", "WARNING")
                     continue
-                
-                takim = self.takim_adi_bul(oyuncu['teamId']) if oyuncu['teamId'] else "Bilinmiyor"
-                
-                istatistikler.append({
-                    'oyuncu': oyuncu['name'],
-                    'takim': takim,
-                    'sayi': sayi
-                })
-                log(f"   {len(istatistikler)}. {oyuncu['name']} ({takim}) - {sayi}")
             
             if istatistikler:
                 self.veri[kategori] = istatistikler
@@ -366,6 +380,9 @@ class FotMobScraper:
                 elif "Yarın" in ham_tarih:
                     yarin = simdi + timedelta(days=1)
                     final_tarih = f"{yarin.day} {AYLAR[yarin.month]}"
+                elif "Dün" in ham_tarih:
+                    dun = simdi - timedelta(days=1)
+                    final_tarih = f"{dun.day} {AYLAR[dun.month]}"
                 else:
                     # Örn: "19 Ocak Pazartesi" -> "19 Ocak"
                     parcalar = ham_tarih.split()

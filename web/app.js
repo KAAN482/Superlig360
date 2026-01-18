@@ -22,20 +22,20 @@ const REAL_STANDINGS = [
 
 // Gol Krallığı (FotMob 2025/2026)
 const TOP_SCORERS = [
-    { name: "Eldor Shomurodov", team: "Başakşehir", count: 12 },
-    { name: "Paul Onuachu", team: "Trabzonspor", count: 11 },
-    { name: "Mauro Icardi", team: "Galatasaray", count: 9 },
-    { name: "Anderson Talisca", team: "Fenerbahçe", count: 9 },
-    { name: "Felipe Augusto", team: "Trabzonspor", count: 8 }
+    { name: "1", team: "Bilinmiyor", count: 13 },
+    { name: "2", team: "Bilinmiyor", count: 11 },
+    { name: "3", team: "Bilinmiyor", count: 9 },
+    { name: "4", team: "Bilinmiyor", count: 9 },
+    { name: "5", team: "Bilinmiyor", count: 8 },
 ];
 
 // Asist Krallığı (FotMob 2025/2026)
 const TOP_ASSISTS = [
-    { name: "Barış Alper Yılmaz", team: "Galatasaray", count: 7 },
-    { name: "Yunus Akgün", team: "Galatasaray", count: 6 },
-    { name: "Alexandru Maxim", team: "Gaziantep FK", count: 6 },
-    { name: "Václav Cerny", team: "Samsunspor", count: 6 },
-    { name: "Göktan Gürpüz", team: "Trabzonspor", count: 5 }
+    { name: "1", team: "Bilinmiyor", count: 7 },
+    { name: "2", team: "Bilinmiyor", count: 6 },
+    { name: "3", team: "Bilinmiyor", count: 6 },
+    { name: "4", team: "Bilinmiyor", count: 6 },
+    { name: "5", team: "Bilinmiyor", count: 5 },
 ];
 
 // En İyi FotMob Rating (2025/2026)
@@ -49,44 +49,44 @@ const TOP_RATING = [
 
 // Kaçırılan Büyük Fırsatlar (FotMob 2025/2026)
 const MISSED_CHANCES = [
-    { name: "Paul Onuachu", team: "Trabzonspor", count: 10 },
-    { name: "Tammy Abraham", team: "Beşiktaş", count: 10 },
-    { name: "Victor Osimhen", team: "Galatasaray", count: 9 },
-    { name: "Ali Sowe", team: "Göztepe", count: 9 },
-    { name: "Janderson", team: "Gaziantep FK", count: 9 }
+    { name: "1", team: "Bilinmiyor", count: 10 },
+    { name: "2", team: "Bilinmiyor", count: 10 },
+    { name: "3", team: "Bilinmiyor", count: 9 },
+    { name: "4", team: "Bilinmiyor", count: 9 },
+    { name: "5", team: "Bilinmiyor", count: 9 },
 ];
 
 // Kalesini Gole Kapatanlar (FotMob 2025/2026)
 const CLEAN_SHEETS = [
-    { name: "Mateusz Lis", team: "Göztepe", count: 11 },
-    { name: "Ertuğrul Taşkıran", team: "Alanyaspor", count: 7 },
-    { name: "Uğurcan Çakır", team: "Trabzonspor", count: 6 },
-    { name: "Aleksandar Jovanovic", team: "Kocaelispor", count: 6 },
-    { name: "Ederson", team: "Fenerbahçe", count: 5 }
+    { name: "1", team: "Bilinmiyor", count: 11 },
+    { name: "2", team: "Bilinmiyor", count: 7 },
+    { name: "3", team: "Bilinmiyor", count: 6 },
+    { name: "4", team: "Bilinmiyor", count: 6 },
+    { name: "5", team: "Bilinmiyor", count: 5 },
 ];
 
 // Sarı Kartlar (FotMob 2025/2026)
 const YELLOW_CARDS = [
-    { name: "Emirhan Topçu", team: "Beşiktaş", count: 7 },
-    { name: "Kevin Rodrigues", team: "Kasımpaşa", count: 6 },
-    { name: "Arda Kızıldağ", team: "Gaziantep FK", count: 6 },
-    { name: "Samet Akaydın", team: "Fenerbahçe", count: 6 },
-    { name: "Show", team: "Çaykur Rizespor", count: 6 }
+    { name: "1", team: "Bilinmiyor", count: 7 },
+    { name: "2", team: "Bilinmiyor", count: 6 },
+    { name: "3", team: "Bilinmiyor", count: 6 },
+    { name: "7", team: "Bilinmiyor", count: 5 },
+    { name: "8", team: "Bilinmiyor", count: 5 },
 ];
 
 // Kırmızı Kartlar (FotMob 2025/2026)
 const RED_CARDS = [
-    { name: "Orkun Kökcü", team: "Galatasaray", count: 2 },
-    { name: "Thalisson", team: "Antalyaspor", count: 2 },
-    { name: "Kevin Rodrigues", team: "Kasımpaşa", count: 1 },
-    { name: "Davinson Sanchez", team: "Galatasaray", count: 1 },
-    { name: "Jayden Oosterwolde", team: "Fenerbahçe", count: 1 }
+    { name: "1", team: "Bilinmiyor", count: 2 },
+    { name: "2", team: "Bilinmiyor", count: 2 },
+    { name: "3", team: "Bilinmiyor", count: 1 },
+    { name: "4", team: "Bilinmiyor", count: 1 },
+    { name: "5", team: "Bilinmiyor", count: 1 },
 ];
 
 // Week 18 Fixtures from Google
 const FIXTURES = [
-    { home: "Başakşehir", away: "Fatih Karagümrük", date: "Dün", time: "--:--", score: "2 - 1", status: "oynandi" },
-    { home: "Galatasaray", away: "Gaziantep FK", date: "Dün", time: "--:--", score: "1 - 1", status: "oynandi" },
+    { home: "Başakşehir", away: "Fatih Karagümrük", date: "17 Ocak", time: "--:--", score: "2 - 1", status: "oynandi" },
+    { home: "Galatasaray", away: "Gaziantep FK", date: "17 Ocak", time: "--:--", score: "1 - 1", status: "oynandi" },
     { home: "Kasımpaşa", away: "Antalyaspor", date: "18 Ocak", time: "14:30", score: null, status: "oynanacak" },
     { home: "Gençlerbirliği", away: "Samsunspor", date: "18 Ocak", time: "17:00", score: null, status: "oynanacak" },
     { home: "Kocaelispor", away: "Trabzonspor", date: "18 Ocak", time: "17:00", score: null, status: "oynanacak" },
