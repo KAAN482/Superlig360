@@ -233,21 +233,25 @@ function loadFixtures() {
             <div class="fixture-team-row">
                 <div class="fixture-team home">
                     <div class="team-form">${homeData ? renderFormBadges(homeData.form) : ''}</div>
-                    <span class="team-name">${match.home}</span>
-                    <span class="team-rank">${homeData ? homeData.rank + '.' : ''}</span>
+                    <div class="team-info">
+                        <span class="team-rank">${homeData ? homeData.rank + '.' : ''}</span>
+                        <span class="team-name">${match.home}</span>
+                    </div>
                 </div>
-                <span class="vs">${isPlayed ? match.score : 'vs'}</span>
+                <span class="vs">vs</span>
                 <div class="fixture-team away">
-                    <span class="team-rank">${awayData ? awayData.rank + '.' : ''}</span>
-                    <span class="team-name">${match.away}</span>
+                    <div class="team-info">
+                        <span class="team-name">${match.away}</span>
+                        <span class="team-rank">${awayData ? awayData.rank + '.' : ''}</span>
+                    </div>
                     <div class="team-form">${awayData ? renderFormBadges(awayData.form) : ''}</div>
                 </div>
             </div>
             <div class="fixture-info">
-                ${!isPlayed
-                ? `<span class="fixture-date">📅 ${match.date}</span>
-                       <span class="fixture-time">⏰ ${match.time}</span>`
-                : ''
+                ${isPlayed
+                ? `<span class="fixture-score">${match.score}</span>`
+                : `<span class="fixture-date">📅 ${match.date}</span>
+                   <span class="fixture-time">⏰ ${match.time}</span>`
             }
             </div>
             ${!isPlayed ? `

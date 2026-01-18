@@ -577,7 +577,7 @@ tbody tr:nth-child(3) td:first-child {
 /* Fixtures */
 #fixtures-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
     gap: 20px;
 }
 
@@ -632,6 +632,21 @@ tbody tr:nth-child(3) td:first-child {
     display: flex;
     align-items: center;
     gap: 5px;
+}
+
+.fixture-score {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #22c55e;
+    text-align: center;
+    padding: 8px 20px;
+    background: rgba(34, 197, 94, 0.1);
+    border-radius: 10px;
+    border: 2px solid rgba(34, 197, 94, 0.3);
+}
+
+.played-match {
+    border-left: 4px solid #22c55e;
 }
 
 @media (max-width: 768px) {
@@ -777,6 +792,12 @@ tbody tr:nth-child(3) td:first-child {
 
 .fixture-team.away {
     align-items: flex-end;
+}
+
+.fixture-team .team-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .fixture-team .team-name {
