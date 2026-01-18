@@ -196,16 +196,6 @@ body {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
-.fixture-card {
-    background: var(--bg-card);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 25px;
-    min-width: 400px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
 .card-header {
     display: flex;
     justify-content: space-between;
