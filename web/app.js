@@ -205,7 +205,6 @@ function loadStandings() {
 // Render stats grid
 function renderStatsGrid(data, gridId, label) {
     const grid = document.getElementById(gridId);
-    const grid = document.getElementById(gridId);
     grid.innerHTML = data.map((item, index) => `
         <div class="stat-card ${index < 3 ? 'top-3' : ''}">
             <div class="stat-rank">${index + 1}</div>
@@ -237,7 +236,7 @@ function loadFixtures() {
                     <span class="team-name">${match.home}</span>
                     <span class="team-rank">${homeData ? homeData.rank + '.' : ''}</span>
                 </div>
-                <span class="vs">vs</span>
+                <span class="vs">${isPlayed ? match.score : 'vs'}</span>
                 <div class="fixture-team away">
                     <span class="team-rank">${awayData ? awayData.rank + '.' : ''}</span>
                     <span class="team-name">${match.away}</span>

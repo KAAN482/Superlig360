@@ -196,6 +196,16 @@ body {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
+.fixture-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 25px;
+    min-width: 400px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
 .card-header {
     display: flex;
     justify-content: space-between;
@@ -575,17 +585,17 @@ tbody tr:nth-child(3) td:first-child {
 }
 
 /* Fixtures */
-.fixtures-grid {
+#fixtures-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
 }
 
 .fixture-card {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 14px;
-    padding: 20px;
+    padding: 25px;
     transition: all 0.3s ease;
 }
 
