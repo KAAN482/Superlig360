@@ -56,8 +56,15 @@ f) 🔴 Kırmızı Kartlar - En çok kırmızı kart gören 5 oyuncu
 2.3 FİKSTÜR & AI TAHMİN
 -----------------------
 - Haftalık maç programı
-- 🤖 AI destekli maç tahminleri
-- Puan durumu ve form analizine dayalı
+- Oynanan Maçlar: 
+  * Maç skoru görüntülenir (örn: "2 - 1")
+  * Yeşil kenarlık ile vurgulanır
+  * AI tahmini gösterilmez
+- Oynanacak Maçlar:
+  * Tarih ve saat görüntülenir
+  * 🤖 AI destekli maç tahminleri
+  * Puan durumu ve form analizine dayalı
+  * Güven yüzdesi ile birlikte tahmin
 
 2.4 DİNAMİK TASARIM
 -------------------
@@ -272,7 +279,9 @@ Rating için count ondalıklı sayıdır (örn: 7.91)
     home: "Galatasaray",        // Ev sahibi
     away: "Gaziantep FK",       // Deplasman
     date: "17 Ocak Cmt",        // Tarih
-    time: "20:00"               // Saat
+    time: "20:00",              // Saat
+    score: "2 - 1",             // Maç skoru (oynanan maçlar için) veya null
+    status: "oynandi"           // "oynandi" veya "oynanacak"
 }
 
 ================================================================================

@@ -244,10 +244,10 @@ function loadFixtures() {
                 </div>
             </div>
             <div class="fixture-info">
-                ${isPlayed
-                ? `<span class="fixture-score">⚽ ${match.score}</span>`
-                : `<span class="fixture-date">📅 ${match.date}</span>
+                ${!isPlayed
+                ? `<span class="fixture-date">📅 ${match.date}</span>
                        <span class="fixture-time">⏰ ${match.time}</span>`
+                : ''
             }
             </div>
             ${!isPlayed ? `

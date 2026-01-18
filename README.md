@@ -30,7 +30,9 @@
 
 ### 📅 Fikstür & AI Tahmin
 - Haftalık maç programı
-- 🤖 AI destekli maç tahminleri
+- **Oynanan Maçlar**: Skor görüntülenir (örn: "2 - 1")
+- **Oynanacak Maçlar**: Tarih, saat ve AI tahmini
+- 🤖 AI destekli maç tahminleri (form ve puan analizine dayalı)
 
 ### 🎨 Dinamik Tasarım
 - Her sekme için farklı arka plan görseli
