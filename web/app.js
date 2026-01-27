@@ -1,41 +1,41 @@
 // Real Süper Lig data from Google (17. Hafta - 2025-26 Sezonu)
 const REAL_STANDINGS = [
-    { rank: 1, team_name: "Galatasaray", played: 18, wins: 13, draws: 4, losses: 1, goals_for: 40, goals_against: 13, goal_diff: 27, points: 43, form: ["B", "G", "G", "G", "B"] },
-    { rank: 2, team_name: "Fenerbahçe", played: 17, wins: 11, draws: 6, losses: 0, goals_for: 39, goals_against: 14, goal_diff: 25, points: 39, form: ["G", "B", "B", "G", "G"] },
-    { rank: 3, team_name: "Trabzonspor", played: 17, wins: 10, draws: 5, losses: 2, goals_for: 33, goals_against: 20, goal_diff: 13, points: 35, form: ["G", "G", "G", "B", "M"] },
-    { rank: 4, team_name: "Göztepe", played: 17, wins: 9, draws: 5, losses: 3, goals_for: 21, goals_against: 9, goal_diff: 12, points: 32, form: ["B", "G", "M", "G", "G"] },
-    { rank: 5, team_name: "Beşiktaş", played: 17, wins: 8, draws: 5, losses: 4, goals_for: 30, goals_against: 22, goal_diff: 8, points: 29, form: ["B", "G", "B", "B", "G"] },
-    { rank: 6, team_name: "Başakşehir", played: 18, wins: 7, draws: 5, losses: 6, goals_for: 29, goals_against: 19, goal_diff: 10, points: 26, form: ["G", "B", "G", "G", "G"] },
-    { rank: 7, team_name: "Samsunspor", played: 17, wins: 6, draws: 7, losses: 4, goals_for: 22, goals_against: 20, goal_diff: 2, points: 25, form: ["B", "B", "M", "M", "M"] },
-    { rank: 8, team_name: "Gaziantep FK", played: 18, wins: 6, draws: 6, losses: 6, goals_for: 25, goals_against: 31, goal_diff: -6, points: 24, form: ["M", "B", "M", "M", "B"] },
-    { rank: 9, team_name: "Kocaelispor", played: 17, wins: 6, draws: 5, losses: 6, goals_for: 15, goals_against: 17, goal_diff: -2, points: 23, form: ["B", "G", "B", "B", "G"] },
-    { rank: 10, team_name: "Alanyaspor", played: 17, wins: 4, draws: 9, losses: 4, goals_for: 16, goals_against: 15, goal_diff: 1, points: 21, form: ["M", "B", "B", "B", "G"] },
-    { rank: 11, team_name: "Gençlerbirliği", played: 17, wins: 5, draws: 3, losses: 9, goals_for: 21, goals_against: 24, goal_diff: -3, points: 18, form: ["M", "M", "G", "B", "G"] },
-    { rank: 12, team_name: "Rizespor", played: 17, wins: 4, draws: 6, losses: 7, goals_for: 20, goals_against: 24, goal_diff: -4, points: 18, form: ["M", "M", "B", "G", "M"] },
-    { rank: 13, team_name: "Konyaspor", played: 17, wins: 4, draws: 5, losses: 8, goals_for: 21, goals_against: 29, goal_diff: -8, points: 17, form: ["B", "M", "B", "M", "B"] },
-    { rank: 14, team_name: "Kasımpaşa", played: 17, wins: 3, draws: 6, losses: 8, goals_for: 14, goals_against: 24, goal_diff: -10, points: 15, form: ["G", "M", "B", "B", "M"] },
-    { rank: 15, team_name: "Antalyaspor", played: 17, wins: 4, draws: 3, losses: 10, goals_for: 16, goals_against: 31, goal_diff: -15, points: 15, form: ["B", "M", "B", "M", "M"] },
-    { rank: 16, team_name: "Kayserispor", played: 17, wins: 2, draws: 9, losses: 6, goals_for: 16, goals_against: 33, goal_diff: -17, points: 15, form: ["M", "G", "B", "B", "B"] },
-    { rank: 17, team_name: "Eyüpspor", played: 17, wins: 3, draws: 4, losses: 10, goals_for: 10, goals_against: 24, goal_diff: -14, points: 13, form: ["B", "G", "B", "M", "M"] },
-    { rank: 18, team_name: "Fatih Karagümrük", played: 18, wins: 2, draws: 3, losses: 13, goals_for: 15, goals_against: 34, goal_diff: -19, points: 9, form: ["M", "M", "B", "M", "M"] },
+    { rank: 1, team_name: "Galatasaray", played: 19, wins: 14, draws: 4, losses: 1, goals_for: 43, goals_against: 14, goal_diff: 29, points: 46, form: ["G", "G", "G", "B", "G"] },
+    { rank: 2, team_name: "Fenerbahçe", played: 19, wins: 12, draws: 7, losses: 0, goals_for: 43, goals_against: 17, goal_diff: 26, points: 43, form: ["B", "G", "G", "G", "B"] },
+    { rank: 3, team_name: "Trabzonspor", played: 19, wins: 12, draws: 5, losses: 2, goals_for: 37, goals_against: 22, goal_diff: 15, points: 41, form: ["G", "B", "M", "G", "G"] },
+    { rank: 4, team_name: "Göztepe", played: 19, wins: 10, draws: 6, losses: 3, goals_for: 25, goals_against: 11, goal_diff: 14, points: 36, form: ["M", "G", "G", "G", "B"] },
+    { rank: 5, team_name: "Beşiktaş", played: 19, wins: 9, draws: 6, losses: 4, goals_for: 33, goals_against: 24, goal_diff: 9, points: 33, form: ["B", "B", "G", "G", "B"] },
+    { rank: 6, team_name: "Başakşehir", played: 19, wins: 8, draws: 5, losses: 6, goals_for: 32, goals_against: 19, goal_diff: 13, points: 29, form: ["B", "G", "G", "G", "G"] },
+    { rank: 7, team_name: "Samsunspor", played: 19, wins: 6, draws: 9, losses: 4, goals_for: 23, goals_against: 21, goal_diff: 2, points: 27, form: ["M", "M", "M", "B", "B"] },
+    { rank: 8, team_name: "Gaziantep FK", played: 19, wins: 6, draws: 7, losses: 6, goals_for: 26, goals_against: 32, goal_diff: -6, points: 25, form: ["B", "M", "M", "B", "B"] },
+    { rank: 9, team_name: "Kocaelispor", played: 19, wins: 6, draws: 6, losses: 7, goals_for: 16, goals_against: 19, goal_diff: -3, points: 24, form: ["B", "B", "G", "M", "B"] },
+    { rank: 10, team_name: "Alanyaspor", played: 19, wins: 4, draws: 10, losses: 5, goals_for: 19, goals_against: 19, goal_diff: 0, points: 22, form: ["B", "B", "G", "M", "B"] },
+    { rank: 11, team_name: "Gençlerbirliği", played: 19, wins: 5, draws: 4, losses: 10, goals_for: 23, goals_against: 27, goal_diff: -4, points: 19, form: ["G", "B", "G", "B", "M"] },
+    { rank: 12, team_name: "Rizespor", played: 19, wins: 4, draws: 7, losses: 8, goals_for: 22, goals_against: 28, goal_diff: -6, points: 19, form: ["B", "G", "M", "M", "B"] },
+    { rank: 13, team_name: "Konyaspor", played: 19, wins: 4, draws: 7, losses: 8, goals_for: 23, goals_against: 31, goal_diff: -8, points: 19, form: ["B", "M", "B", "B", "B"] },
+    { rank: 14, team_name: "Antalyaspor", played: 19, wins: 5, draws: 4, losses: 10, goals_for: 18, goals_against: 32, goal_diff: -14, points: 19, form: ["B", "M", "M", "B", "G"] },
+    { rank: 15, team_name: "Kasımpaşa", played: 19, wins: 3, draws: 7, losses: 9, goals_for: 15, goals_against: 26, goal_diff: -11, points: 16, form: ["B", "B", "M", "B", "M"] },
+    { rank: 16, team_name: "Eyüpspor", played: 19, wins: 3, draws: 6, losses: 10, goals_for: 13, goals_against: 27, goal_diff: -14, points: 15, form: ["B", "M", "M", "B", "B"] },
+    { rank: 17, team_name: "Kayserispor", played: 19, wins: 2, draws: 9, losses: 8, goals_for: 16, goals_against: 37, goal_diff: -21, points: 15, form: ["B", "B", "B", "M", "M"] },
+    { rank: 18, team_name: "Fatih Karagümrük", played: 19, wins: 2, draws: 3, losses: 14, goals_for: 16, goals_against: 37, goal_diff: -21, points: 9, form: ["M", "B", "M", "M", "M"] },
 ];
 
 // Gol Krallığı (FotMob 2025/2026)
 const TOP_SCORERS = [
     { name: "Eldor Shomurodov", team: "Bilinmiyor", count: 13 },
-    { name: "Paul Onuachu", team: "Bilinmiyor", count: 11 },
+    { name: "Paul Onuachu", team: "Bilinmiyor", count: 12 },
+    { name: "Anderson Talisca", team: "Bilinmiyor", count: 11 },
+    { name: "Felipe Augusto", team: "Bilinmiyor", count: 9 },
     { name: "Mauro Icardi", team: "Bilinmiyor", count: 9 },
-    { name: "Anderson Talisca", team: "Bilinmiyor", count: 9 },
-    { name: "Felipe Augusto", team: "Bilinmiyor", count: 8 },
 ];
 
 // Asist Krallığı (FotMob 2025/2026)
 const TOP_ASSISTS = [
     { name: "Baris Alper Yilmaz", team: "Bilinmiyor", count: 7 },
-    { name: "Yunus Akgün", team: "Bilinmiyor", count: 6 },
     { name: "Alexandru Maxim", team: "Bilinmiyor", count: 6 },
+    { name: "Yunus Akgün", team: "Bilinmiyor", count: 6 },
     { name: "Václav Cerny", team: "Bilinmiyor", count: 6 },
-    { name: "Göktan Gürpüz", team: "Bilinmiyor", count: 5 },
+    { name: "Marco Asensio", team: "Bilinmiyor", count: 6 },
 ];
 
 // En İyi FotMob Rating (2025/2026)
@@ -51,9 +51,9 @@ const TOP_RATING = [
 const MISSED_CHANCES = [
     { name: "Paul Onuachu", team: "Bilinmiyor", count: 10 },
     { name: "Tammy Abraham", team: "Bilinmiyor", count: 10 },
-    { name: "Victor Osimhen", team: "Bilinmiyor", count: 9 },
-    { name: "Ali Sowe", team: "Bilinmiyor", count: 9 },
-    { name: "Janderson", team: "Bilinmiyor", count: 9 },
+    { name: "Janderson", team: "Bilinmiyor", count: 10 },
+    { name: "Mohamed Bayo", team: "Bilinmiyor", count: 9 },
+    { name: "Eldor Shomurodov", team: "Bilinmiyor", count: 9 },
 ];
 
 // Kalesini Gole Kapatanlar (FotMob 2025/2026)
@@ -62,16 +62,16 @@ const CLEAN_SHEETS = [
     { name: "Ertugrul Taskiran", team: "Bilinmiyor", count: 7 },
     { name: "Ugurcan Cakir", team: "Bilinmiyor", count: 6 },
     { name: "Aleksandar Jovanovic", team: "Bilinmiyor", count: 6 },
-    { name: "Ederson", team: "Bilinmiyor", count: 5 },
+    { name: "Muhammed Sengezer", team: "Bilinmiyor", count: 6 },
 ];
 
 // Sarı Kartlar (FotMob 2025/2026)
 const YELLOW_CARDS = [
     { name: "Emirhan Topcu", team: "Bilinmiyor", count: 7 },
+    { name: "Show", team: "Bilinmiyor", count: 7 },
     { name: "Kevin Rodrigues", team: "Bilinmiyor", count: 6 },
     { name: "Arda Kizildag", team: "Bilinmiyor", count: 6 },
-    { name: "Samet Akaydin", team: "Bilinmiyor", count: 6 },
-    { name: "Show", team: "Bilinmiyor", count: 6 },
+    { name: "Fidan Aliti", team: "Bilinmiyor", count: 6 },
 ];
 
 // Kırmızı Kartlar (FotMob 2025/2026)
@@ -85,15 +85,15 @@ const RED_CARDS = [
 
 // Week 18 Fixtures from Google
 const FIXTURES = [
-    { home: "Başakşehir", away: "Fatih Karagümrük", date: "17 Ocak", time: "--:--", score: "2 - 1", status: "oynandi" },
-    { home: "Galatasaray", away: "Gaziantep FK", date: "17 Ocak", time: "--:--", score: "1 - 1", status: "oynandi" },
-    { home: "Kasımpaşa", away: "Antalyaspor", date: "18 Ocak", time: "14:30", score: null, status: "oynanacak" },
-    { home: "Gençlerbirliği", away: "Samsunspor", date: "18 Ocak", time: "17:00", score: null, status: "oynanacak" },
-    { home: "Kocaelispor", away: "Trabzonspor", date: "18 Ocak", time: "17:00", score: null, status: "oynanacak" },
-    { home: "Alanyaspor", away: "Fenerbahçe", date: "18 Ocak", time: "20:00", score: null, status: "oynanacak" },
-    { home: "Konyaspor", away: "Eyüpspor", date: "19 Ocak", time: "17:00", score: null, status: "oynanacak" },
-    { home: "Beşiktaş", away: "Kayserispor", date: "19 Ocak", time: "20:00", score: null, status: "oynanacak" },
-    { home: "Göztepe", away: "Rizespor", date: "19 Ocak", time: "20:00", score: null, status: "oynanacak" },
+    { home: "Antalyaspor", away: "Trabzonspor", date: "30 Ocak", time: "20:00", score: null, status: "oynanacak" },
+    { home: "Kasımpaşa", away: "Samsunspor", date: "30 Ocak", time: "20:00", score: null, status: "oynanacak" },
+    { home: "Alanyaspor", away: "Eyüpspor", date: "31 Ocak", time: "14:30", score: null, status: "oynanacak" },
+    { home: "Başakşehir", away: "Rizespor", date: "31 Ocak", time: "17:00", score: null, status: "oynanacak" },
+    { home: "Beşiktaş", away: "Konyaspor", date: "31 Ocak", time: "20:00", score: null, status: "oynanacak" },
+    { home: "Göztepe", away: "Fatih Karagümrük", date: "31 Ocak", time: "20:00", score: null, status: "oynanacak" },
+    { home: "Gençlerbirliği", away: "Gaziantep FK", date: "1 Şubat", time: "17:00", score: null, status: "oynanacak" },
+    { home: "Galatasaray", away: "Kayserispor", date: "1 Şubat", time: "20:00", score: null, status: "oynanacak" },
+    { home: "Kocaelispor", away: "Fenerbahçe", date: "2 Şubat", time: "20:00", score: null, status: "oynanacak" },
 ];
 
 // Get team data by name
